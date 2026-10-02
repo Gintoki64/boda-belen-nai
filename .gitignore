@@ -14,3 +14,4 @@ wp-config.php
 # Sistema
 Thumbs.db
 .DS_Store
+*.csv

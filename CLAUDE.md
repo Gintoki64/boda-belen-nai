@@ -52,7 +52,18 @@ está en `prompt-claude-code-boda.md`; el plan de diseño/arquitectura detallado
 - **Página "Boda" fijada como portada estática** en Ajustes → Lectura — hecho.
 - Pendiente: rellenar datos reales en **Boda → Ajustes generales** (menú propio del plugin,
   icono de corazón en la barra lateral de wp-admin).
-- Pendiente: probar un envío real del formulario y comprobar que aparece en Boda → Confirmaciones.
+- **Formulario RSVP funcionando en producción** (2026-10-02): el usuario lo probó tras subir los
+  arreglos, y verificado con `curl`: la portada ya sale con `Cache-Control: no-store` /
+  `X-LiteSpeed-Cache-Control: no-cache`, el JS del plugin con versión por `filemtime` y sin rastro
+  del azulejo. Pendiente aún: comprobar en Boda → Confirmaciones que la respuesta de prueba se ve bien.
+- **Repositorio en GitHub**: https://github.com/Gintoki64/boda-belen-nai (público, rama `main`).
+  `.gitignore` excluye `cxonversacion.jpg` (captura privada de WhatsApp), `fondoPaginaBoda.jpg`
+  original, `*.zip`, `public_html/` y `wp-config.php`. Ojo: es público — nunca commitear
+  credenciales ni datos de invitados (CSV de importación, exportaciones). GitHub es solo copia del
+  código; el despliegue real sigue siendo por FTP (FileZilla, sitio guardado como
+  **"Boda Belen y nai"**, sin tilde — `filezilla.exe -c "0/Boda Belen y nai"`).
+- Recomendado (no confirmado que se haya hecho): asignar la plantilla "Página de la boda" a la
+  página "Boda" en el editor (Atributos de página → Plantilla); hoy funciona solo por el slug.
 - Pendiente: configurar Brevo (SMTP + SPF/DKIM) y comprobar que llegan los correos.
 - Pendiente: configurar exclusión de caché en LiteSpeed si Hostinger lo activa (ver plan) — causó
   el problema real de "guardo ajustes y no se ve en otros dispositivos" (2026-09-06); solución
@@ -61,8 +72,8 @@ está en `prompt-claude-code-boda.md`; el plan de diseño/arquitectura detallado
   con `curl` directo contra `bodabelennai.es` sin pasar por caché: `main.css` tiene el fondo floral
   y `Last-Modified` de esa fecha). `wp-content/` y `public_html/wp-content/` de este repo local
   vuelven a coincidir con el servidor real.
-- **Acceso FTP configurado** (2026-09-07): FileZilla instalado, sitio guardado como "Boda Belén y
-  Nai" con la IP de Hostinger (no `ftp.bodabelennai.es`, la web pidió la IP directa). Usar esto
+- **Acceso FTP configurado** (2026-09-07): FileZilla instalado, sitio guardado como "Boda Belen y
+  nai" con la IP de Hostinger (no `ftp.bodabelennai.es`, la web pidió la IP directa). Usar esto
   para futuros despliegues en vez de zips + uploader del admin de WordPress — mucho más fiable.
 - **La carpeta `public_html/` local desapareció** en algún momento tras configurar el FTP (ya no
   hacía falta como copia de inspección, con FTP se navega el servidor real directamente) — dejar
@@ -168,7 +179,7 @@ revisión.
   velo a **88% de opacidad** en `body` (`assets/css/main.css`) — deja solo una insinuación del
   patrón y la costura deja de notarse.
 
-## Fallo crítico del RSVP detectado 2026-10-02 (corregido en local, PENDIENTE DE SUBIR)
+## Fallo crítico del RSVP detectado 2026-10-02 (corregido, subido y confirmado en producción)
 
 - **El formulario no se podía enviar en producción**: la portada salía cacheada por LiteSpeed
   (`X-LiteSpeed-Cache: hit`) con un nonce caducado → `admin-ajax.php` respondía `-1` (403) y el
