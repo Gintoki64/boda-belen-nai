@@ -1,0 +1,24 @@
+/*
+ * Paleta andaluza contemporánea. Nota de contraste (WCAG AA): el albero no se usa nunca
+ * como color de texto sobre blanco (falla el contraste), solo como fondo/acento con texto
+ * en añil o blanco encima.
+ */
+:root {
+	--boda-albero: #d9a441;
+	--boda-anil: #1f3a6e;
+	--boda-anil-suave: #5c6f92;
+	--boda-blanco-cal: #faf7f2;
+	--boda-terracota: #c1592f;
+
+	--boda-color-texto: var(--boda-anil);
+	--boda-color-fondo: var(--boda-blanco-cal);
+	--boda-color-acento: var(--boda-albero);
+	--boda-color-acento-2: var(--boda-terracota);
+
+	/* Fuentes de pago de Belén, vía Adobe Fonts (ver functions.php: boda_theme_enqueue_assets). */
+	--boda-fuente-titulares: 'altesse-std-24pt', Georgia, 'Times New Roman', serif;
+	--boda-fuente-cuerpo: 'the-seasons', Georgia, 'Times New Roman', serif;
+
+	--boda-radio: 10px;
+	--boda-espaciado-seccion: clamp(3rem, 8vw, 6rem);
+}

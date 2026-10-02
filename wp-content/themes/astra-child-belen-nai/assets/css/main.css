@@ -1,0 +1,428 @@
+/* Mobile-first: los estilos base son para móvil, el escritorio se añade con min-width. */
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	font-family: var(--boda-fuente-cuerpo);
+	color: var(--boda-color-texto);
+	line-height: 1.6;
+	margin: 0;
+	background-color: var(--boda-color-fondo);
+	/* Velo bajo: como el texto ya no depende de este fondo para leerse bien (cada sección tiene
+	   su propia tarjeta casi opaca encima), aquí se puede dejar ver la tela floral de verdad en
+	   vez de que quede casi plana/sólida como el fondo liso de antes. */
+	background-image: linear-gradient(rgba(250, 247, 242, 0.4), rgba(250, 247, 242, 0.4)),
+		url('../images/fondo-boda-pattern.jpg');
+	background-repeat: repeat;
+	background-position: top center;
+	background-size: auto, 600px;
+}
+
+@media (min-width: 782px) {
+	body {
+		/* Fijo solo en pantallas grandes: en móvil "fixed" da tirones de scroll y gasta batería. */
+		background-attachment: fixed, fixed;
+	}
+}
+
+h1, h2, h3 {
+	font-family: var(--boda-fuente-titulares);
+	/* "Altesse Std 24pt" solo tiene la variante regular: sin esto el navegador la "engordaría"
+	   artificialmente (negrita falsa), que queda mal en una fuente tan ornamentada. */
+	font-weight: 400;
+	line-height: 1.15;
+	margin: 0 0 0.5em;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}
+
+.screen-reader-text {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.boda-skip-link {
+	position: absolute;
+	top: -100px;
+	left: 0;
+	background: var(--boda-anil);
+	color: #fff;
+	padding: 0.75em 1.25em;
+	z-index: 1000;
+	transition: top 0.2s ease;
+}
+
+.boda-skip-link:focus {
+	top: 0;
+	position: fixed;
+}
+
+/* ---------- Cabecera y navegación ---------- */
+
+.boda-cabecera {
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.85em 1.25em;
+	background: var(--boda-color-fondo);
+	border-bottom: 1px solid rgba(31, 58, 110, 0.12);
+}
+
+.boda-cabecera__marca {
+	font-family: var(--boda-fuente-titulares);
+	font-size: 1.15rem;
+}
+
+.boda-menu-toggle {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	background: none;
+	border: none;
+	padding: 0.5em;
+	cursor: pointer;
+}
+
+.boda-menu-toggle__barra {
+	width: 24px;
+	height: 2px;
+	background: var(--boda-anil);
+	display: block;
+}
+
+.boda-nav {
+	position: fixed;
+	inset: 0 0 0 30%;
+	top: var(--boda-alto-cabecera, 64px);
+	background: var(--boda-color-fondo);
+	display: flex;
+	flex-direction: column;
+	padding: 1.5em;
+	gap: 1.1em;
+	transform: translateX(100%);
+	transition: transform 0.25s ease;
+	box-shadow: -4px 0 12px rgba(0, 0, 0, 0.08);
+}
+
+.boda-nav.is-abierto {
+	transform: translateX(0);
+}
+
+.boda-nav a {
+	color: var(--boda-color-texto);
+	text-decoration: none;
+	font-size: 1.05rem;
+}
+
+.boda-nav__destacado {
+	font-weight: 700;
+	color: var(--boda-terracota);
+}
+
+@media (min-width: 782px) {
+	.boda-menu-toggle {
+		display: none;
+	}
+
+	.boda-nav {
+		position: static;
+		flex-direction: row;
+		transform: none;
+		box-shadow: none;
+		padding: 0;
+		align-items: center;
+		gap: 1.8em;
+	}
+
+	/* Versalitas con espaciado: en el menú horizontal de escritorio queda más de invitación;
+	   en el panel móvil a pantalla completa se deja el texto grande normal, más fácil de tocar. */
+	.boda-nav a {
+		font-size: 0.8rem;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+	}
+
+	.boda-nav__destacado {
+		border-bottom: 1px solid var(--boda-terracota);
+		padding-bottom: 2px;
+	}
+}
+
+/* ---------- Secciones genéricas ---------- */
+
+.boda-seccion {
+	position: relative;
+	overflow: hidden;
+	padding: var(--boda-espaciado-seccion) 1.25em;
+}
+
+.boda-seccion__contenido {
+	position: relative;
+	z-index: 1;
+	max-width: 720px;
+	margin: 0 auto;
+	/* Tarjeta de invitación sobre la tela con el estampado: el fondo floral sigue viéndose
+	   alrededor de cada sección, y el texto (con "The Seasons", más fina que la fuente anterior)
+	   queda siempre legible encima de un fondo limpio en vez de directamente sobre el patrón. */
+	background: rgba(250, 247, 242, 0.92);
+	border-radius: var(--boda-radio);
+	padding: clamp(1.5rem, 5vw, 2.5rem);
+	box-shadow: 0 18px 40px -22px rgba(31, 58, 110, 0.35), 0 1px 0 rgba(217, 164, 65, 0.5) inset;
+}
+
+/* Filete dorado en el borde superior, como el canto de una cartulina de invitación. */
+.boda-seccion__contenido::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background: linear-gradient(90deg, transparent, var(--boda-albero), transparent);
+	border-radius: var(--boda-radio) var(--boda-radio) 0 0;
+}
+
+/* La portada ya tiene su propio degradado y las cajas blancas de la cuenta atrás: una tarjeta
+   encima quedaría redundante, así que ahí se refuerza la legibilidad con una sombra de texto
+   en vez de una tarjeta. */
+.boda-seccion--portada .boda-seccion__contenido {
+	background: none;
+	box-shadow: none;
+	padding: 0;
+}
+
+.boda-seccion--portada .boda-portada__saludo,
+.boda-seccion--portada .boda-portada__nombres,
+.boda-seccion--portada .boda-portada__fecha {
+	text-shadow: 0 1px 16px rgba(250, 247, 242, 0.9), 0 1px 3px rgba(250, 247, 242, 0.9);
+}
+
+.boda-seccion__titulo {
+	font-size: clamp(1.6rem, 4vw, 2.2rem);
+	color: var(--boda-anil);
+	text-align: center;
+	margin-bottom: 0.6em;
+}
+
+.boda-seccion__titulo::after {
+	content: "";
+	display: block;
+	width: 46px;
+	height: 2px;
+	background: var(--boda-albero);
+	margin: 0.6em auto 0;
+}
+
+.boda-contenido-libre img {
+	border-radius: var(--boda-radio);
+}
+
+/* ---------- Portada ---------- */
+
+.boda-seccion--portada {
+	min-height: 90vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	background: linear-gradient(180deg, rgba(217, 164, 65, 0.15), transparent 60%);
+}
+
+.boda-portada__saludo {
+	font-size: 1.1rem;
+	margin-bottom: 0.5em;
+}
+
+.boda-portada__nombres {
+	font-size: clamp(2.4rem, 10vw, 4.5rem);
+	color: var(--boda-anil);
+}
+
+.boda-portada__y {
+	color: var(--boda-terracota);
+	padding: 0 0.2em;
+}
+
+.boda-portada__fecha {
+	font-size: 1.25rem;
+	letter-spacing: 0.04em;
+}
+
+.boda-countdown {
+	display: flex;
+	gap: 1em;
+	justify-content: center;
+	margin: 1.5em 0;
+}
+
+.boda-countdown__unidad {
+	position: relative;
+	background: var(--boda-blanco-cal);
+	border-radius: var(--boda-radio);
+	padding: 0.75em 1em;
+	min-width: 64px;
+	box-shadow: 0 10px 24px -14px rgba(31, 58, 110, 0.45);
+}
+
+/* El mismo filete dorado que las tarjetas de sección, para que hable el mismo idioma visual. */
+.boda-countdown__unidad::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 12%;
+	right: 12%;
+	height: 2px;
+	background: var(--boda-albero);
+}
+
+.boda-countdown__unidad span {
+	display: block;
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: var(--boda-terracota);
+	font-variant-numeric: tabular-nums;
+}
+
+.boda-countdown__unidad small {
+	font-size: 0.7rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--boda-anil-suave);
+}
+
+.boda-boton {
+	display: inline-block;
+	background: var(--boda-terracota);
+	color: #fff;
+	text-decoration: none;
+	padding: 0.85em 2em;
+	border-radius: 999px;
+	font-weight: 700;
+}
+
+.boda-boton--secundario {
+	background: transparent;
+	color: var(--boda-anil);
+	border: 1px solid var(--boda-anil);
+	border-radius: 999px;
+	padding: 0.6em 1.4em;
+	cursor: pointer;
+}
+
+/* ---------- Historia ---------- */
+
+.boda-historia__texto p:first-of-type {
+	font-weight: 300;
+	font-size: 1.08em;
+}
+
+.boda-historia__galeria {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 0.75em;
+	margin-top: 1.5em;
+}
+
+.boda-historia__imagen {
+	border-radius: var(--boda-radio);
+	object-fit: cover;
+	width: 100%;
+}
+
+@media (min-width: 600px) {
+	.boda-historia__galeria {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+/* ---------- Ceremonia ---------- */
+
+.boda-ceremonia__bloques {
+	display: grid;
+	gap: 2em;
+}
+
+/* Etiqueta pequeña en vez de un titular grande para "Ceremonia"/"Banquete": ya tenemos el
+   título grande de la sección, repetirlo en cada bloque pesaba más de la cuenta. */
+.boda-ceremonia__bloque h3 {
+	font-family: var(--boda-fuente-cuerpo);
+	font-size: 0.78rem;
+	font-weight: 400;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	color: var(--boda-terracota);
+	margin: 0 0 0.3em;
+}
+
+.boda-ceremonia__hora {
+	color: var(--boda-anil-suave);
+	margin: -0.3em 0 0.6em;
+}
+
+.boda-mapa {
+	width: 100%;
+	height: 220px;
+	border: none;
+	border-radius: var(--boda-radio);
+	margin-top: 0.75em;
+}
+
+@media (min-width: 782px) {
+	.boda-ceremonia__bloques {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+/* ---------- Transporte ---------- */
+
+.boda-transporte__paradas {
+	list-style: none;
+	padding: 0;
+}
+
+.boda-transporte__paradas li {
+	display: flex;
+	justify-content: space-between;
+	padding: 0.6em 0;
+	border-bottom: 1px dashed rgba(31, 58, 110, 0.2);
+}
+
+/* ---------- Regalo ---------- */
+
+.boda-regalo__iban {
+	background: #fff;
+	border-radius: var(--boda-radio);
+	padding: 1.25em;
+	text-align: center;
+	margin-top: 1em;
+}
+
+.boda-regalo__iban-valor {
+	display: block;
+	font-size: 1.15rem;
+	font-weight: 700;
+	letter-spacing: 0.03em;
+	margin-bottom: 0.75em;
+	word-break: break-all;
+}
+
+/* ---------- Pie ---------- */
+
+.boda-pie {
+	text-align: center;
+	padding: 2em 1em;
+	font-size: 0.9rem;
+	color: var(--boda-anil);
+}

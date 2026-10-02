@@ -1,0 +1,12 @@
+/*
+Theme Name: Belén & Nai Boda
+Template: astra
+Description: Child theme de Astra para la web de la boda de Belén y Nai (bodabelennai.es). Requiere el tema Astra instalado como padre.
+Author: Belén y Nai
+Version: 1.0.0
+Text Domain: astra-child-belen-nai
+*/
+
+/* El grueso de los estilos vive en assets/css/ (variables y main),
+   cargados desde functions.php. Este archivo solo necesita existir con esta cabecera para
+   que WordPress reconozca el child theme; se deja vacío de reglas a propósito. */

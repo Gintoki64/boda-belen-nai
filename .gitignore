@@ -1,0 +1,16 @@
+# Capturas privadas y originales de imágenes (no forman parte del código)
+cxonversacion.jpg
+fondoPaginaBoda.jpg
+*.jpg.bak
+
+# Zips de despliegue (se regeneran)
+*.zip
+
+# Copias del servidor real: contienen wp-config.php con credenciales de producción
+public_html/
+wp-config.php
+.env
+
+# Sistema
+Thumbs.db
+.DS_Store

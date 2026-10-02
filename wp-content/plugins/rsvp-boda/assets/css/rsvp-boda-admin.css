@@ -1,0 +1,59 @@
+.rsvp-boda-contadores {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin: 16px 0;
+}
+
+.rsvp-boda-contador {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	padding: 12px 20px;
+	min-width: 140px;
+}
+
+.rsvp-boda-contador__numero {
+	display: block;
+	font-size: 24px;
+	font-weight: 600;
+	line-height: 1.2;
+}
+
+.rsvp-boda-contador__etiqueta {
+	display: block;
+	color: #646970;
+	font-size: 12px;
+}
+
+.rsvp-boda-badge {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 12px;
+	font-size: 11px;
+	font-weight: 600;
+}
+
+.rsvp-boda-badge--si {
+	background: #edfaef;
+	color: #1e7e34;
+}
+
+.rsvp-boda-badge--no {
+	background: #fdeceb;
+	color: #a02622;
+}
+
+.rsvp-boda-badge--aviso {
+	background: #fff8e5;
+	color: #8a6d00;
+	margin-left: 6px;
+}
+
+.rsvp-boda-bloque-enlaces {
+	margin-bottom: 24px;
+}
+
+.rsvp-boda-enlace-input {
+	width: 280px;
+}
