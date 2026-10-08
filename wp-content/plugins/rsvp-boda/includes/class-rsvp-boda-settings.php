@@ -22,8 +22,8 @@ class RSVP_Boda_Settings {
 			return;
 		}
 		wp_enqueue_media();
-		wp_enqueue_style( 'rsvp-boda-admin', RSVP_BODA_PLUGIN_URL . 'assets/css/rsvp-boda-admin.css', array(), RSVP_BODA_VERSION );
-		wp_enqueue_script( 'rsvp-boda-admin', RSVP_BODA_PLUGIN_URL . 'assets/js/rsvp-boda-admin.js', array( 'jquery' ), RSVP_BODA_VERSION, true );
+		wp_enqueue_style( 'rsvp-boda-admin', RSVP_BODA_PLUGIN_URL . 'assets/css/rsvp-boda-admin.css', array(), (string) filemtime( RSVP_BODA_PLUGIN_DIR . 'assets/css/rsvp-boda-admin.css' ) );
+		wp_enqueue_script( 'rsvp-boda-admin', RSVP_BODA_PLUGIN_URL . 'assets/js/rsvp-boda-admin.js', array( 'jquery' ), (string) filemtime( RSVP_BODA_PLUGIN_DIR . 'assets/js/rsvp-boda-admin.js' ), true );
 	}
 
 	/**
@@ -99,7 +99,7 @@ class RSVP_Boda_Settings {
 						'permite_acompanantes_sin_enlace',
 						'Permitir acompañante a quien entra sin enlace personalizado',
 						'checkbox',
-						array( 'ayuda' => 'La mayoría de invitados entrará por su enlace de WhatsApp, donde el permiso de acompañante ya va marcado por persona en "Invitados y enlaces". Este ajuste solo aplica al caso minoritario de acceso directo a la web sin enlace.' ),
+						array( 'ayuda' => 'Déjalo desmarcado si usas los dos enlaces generales de "Invitados y enlaces": la web a secas es el enlace sin +1, y el enlace con +1 ya lo permite por sí solo. Si lo marcas, cualquiera que entre a la web podrá añadir acompañantes.' ),
 					),
 					array( 'limite_acompanantes', 'Número máximo de acompañantes seleccionable', 'number' ),
 				),

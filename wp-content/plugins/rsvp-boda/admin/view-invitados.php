@@ -20,6 +20,32 @@ function rsvp_boda_url_invitado( string $slug, string $url_base ): string {
 <div class="wrap rsvp-boda-wrap">
 	<h1>Invitados y enlaces</h1>
 
+	<h2>Enlaces generales</h2>
+	<p>Dos enlaces iguales para todo el mundo, sin tener que dar de alta a nadie: manda cada uno a quien corresponda. Si alguien vuelve a entrar desde el mismo móvil, edita su respuesta en vez de duplicarla.</p>
+	<?php $url_con_mas_uno = add_query_arg( 'c', rsvp_boda_clave_enlace_mas_uno(), $url_boda ); ?>
+	<table class="form-table" role="presentation">
+		<tr>
+			<th scope="row">Con acompañante (+1)</th>
+			<td>
+				<input type="text" readonly id="rsvp-boda-enlace-general-con" class="regular-text" value="<?php echo esc_url( $url_con_mas_uno ); ?>" onclick="this.select()" />
+				<button type="button" class="button rsvp-boda-copiar" data-copiar="rsvp-boda-enlace-general-con">Copiar</button>
+				<p class="description">El formulario deja añadir acompañantes. La parte final del enlace es una clave: si se cambia a mano, deja de dar el +1.</p>
+			</td>
+		</tr>
+		<tr>
+			<th scope="row">Sin acompañante</th>
+			<td>
+				<input type="text" readonly id="rsvp-boda-enlace-general-sin" class="regular-text" value="<?php echo esc_url( $url_boda ); ?>" onclick="this.select()" />
+				<button type="button" class="button rsvp-boda-copiar" data-copiar="rsvp-boda-enlace-general-sin">Copiar</button>
+				<?php if ( '1' === rsvp_boda_get_option( 'permite_acompanantes_sin_enlace', '0' ) ) : ?>
+					<p class="description" style="color:#b32d2e;"><strong>Ojo:</strong> ahora mismo este enlace SÍ deja añadir acompañantes, porque está marcado "Permitir acompañante a quien entra sin enlace personalizado" en Ajustes generales → Formulario RSVP. Desmárcalo para que este sea de verdad el enlace sin +1.</p>
+				<?php else : ?>
+					<p class="description">Es la dirección normal de la web: el formulario no muestra la opción de acompañantes.</p>
+				<?php endif; ?>
+			</td>
+		</tr>
+	</table>
+
 	<h2>Importar lista de invitados</h2>
 	<p>Sube un CSV con columnas <code>nombre;slug;grupo;permite_acompanantes</code> (las tres últimas son opcionales; <code>permite_acompanantes</code> acepta "si"/"no"). Si el slug ya existe, se actualiza esa fila en vez de duplicarla.</p>
 	<form method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">

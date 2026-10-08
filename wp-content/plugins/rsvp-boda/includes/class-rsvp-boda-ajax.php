@@ -73,9 +73,12 @@ class RSVP_Boda_Ajax {
 			// Slug desconocido (enlace manipulado o caducado): se trata como acceso directo.
 			$slug = '';
 		}
+		// Enlace general con +1: la clave se vuelve a comprobar aquí, nunca se fía del formulario.
+		$clave_acceso = $slug ? '' : sanitize_key( wp_unslash( $_POST['acceso'] ?? '' ) );
+
 		$permite_acompanantes = $invitado
 			? (bool) $invitado['permite_acompanantes']
-			: ( '1' === rsvp_boda_get_option( 'permite_acompanantes_sin_enlace', '0' ) );
+			: rsvp_boda_permite_acompanantes_sin_slug( $clave_acceso );
 
 		list( $num_acompanantes, $acompanantes ) = $this->procesar_acompanantes( $asiste, $permite_acompanantes );
 
@@ -99,6 +102,11 @@ class RSVP_Boda_Ajax {
 			'ip_hash'            => rsvp_boda_hash_ip( $this->obtener_ip() ),
 		);
 
+		// Se mira antes de guardar si ya había respuesta, para avisar de "cambio" y no de "nueva".
+		$es_cambio = $slug
+			? null !== RSVP_Boda_DB::obtener_respuesta_por_slug( $slug )
+			: null !== $this->respuesta_desde_cookie_edicion();
+
 		$id = $slug ? $this->guardar_con_slug( $slug, $datos ) : $this->guardar_sin_slug( $datos );
 
 		if ( false === $id ) {
@@ -112,7 +120,7 @@ class RSVP_Boda_Ajax {
 		}
 
 		$respuesta_guardada = RSVP_Boda_DB::obtener_respuesta_por_id( $id );
-		$this->enviar_correos( $id, $respuesta_guardada );
+		$this->enviar_correos( $id, $respuesta_guardada, $es_cambio );
 
 		wp_send_json_success(
 			array(
@@ -165,9 +173,10 @@ class RSVP_Boda_Ajax {
 	 * su primer envío, para que puedan volver a editar su respuesta sin crear un duplicado.
 	 */
 	private function guardar_sin_slug( array $datos ) {
-		$id_existente = $this->id_desde_cookie_edicion();
+		$existente = $this->respuesta_desde_cookie_edicion();
 
-		if ( $id_existente && RSVP_Boda_DB::obtener_respuesta_por_id( $id_existente ) ) {
+		if ( $existente ) {
+			$id_existente = (int) $existente['id'];
 			$ok = RSVP_Boda_DB::actualizar_respuesta_por_id( $id_existente, $datos );
 			return $ok ? $id_existente : false;
 		}
@@ -179,6 +188,11 @@ class RSVP_Boda_Ajax {
 		}
 
 		return $nuevo_id;
+	}
+
+	private function respuesta_desde_cookie_edicion(): ?array {
+		$id = $this->id_desde_cookie_edicion();
+		return $id ? RSVP_Boda_DB::obtener_respuesta_por_id( $id ) : null;
 	}
 
 	private function id_desde_cookie_edicion(): int {
@@ -214,21 +228,34 @@ class RSVP_Boda_Ajax {
 	 * Dispara los correos de aviso. Nunca condiciona el resultado ya devuelto al usuario:
 	 * el guardado en base de datos ya se ha completado antes de llegar aquí.
 	 */
-	private function enviar_correos( int $id, ?array $respuesta ): void {
+	private function enviar_correos( int $id, ?array $respuesta, bool $es_cambio ): void {
 		if ( ! $respuesta ) {
 			return;
 		}
 
 		$actualizacion = array();
 
-		$ok_invitado = RSVP_Boda_Email::enviar_confirmacion_invitado( $respuesta );
-		$actualizacion['email_enviado'] = $ok_invitado ? 1 : 0;
+		// Sin email del invitado (es opcional) no hay nada que enviarle: eso no es un fallo,
+		// antes se marcaba como "Fallo de envío" en el panel a todo el que no lo rellenaba.
+		$tiene_email = ! empty( $respuesta['email'] ) && is_email( $respuesta['email'] );
+		$ok_invitado = $tiene_email ? RSVP_Boda_Email::enviar_confirmacion_invitado( $respuesta, $es_cambio ) : true;
+		$actualizacion['email_enviado'] = $tiene_email && $ok_invitado ? 1 : 0;
 
-		$ok_admin = RSVP_Boda_Email::enviar_aviso_pareja( $respuesta );
+		$ok_admin = RSVP_Boda_Email::enviar_aviso_pareja( $respuesta, $es_cambio );
 		$actualizacion['email_enviado_admin'] = $ok_admin ? 1 : 0;
 
 		if ( ! $ok_invitado || ! $ok_admin ) {
-			$actualizacion['email_error'] = 'Fallo de envío en ' . current_time( 'mysql' );
+			$fallidos = array();
+			if ( ! $ok_invitado ) {
+				$fallidos[] = 'al invitado';
+			}
+			if ( ! $ok_admin ) {
+				$fallidos[] = 'aviso a la pareja';
+			}
+			$motivo = RSVP_Boda_Email::ultimo_error();
+
+			$actualizacion['email_error'] = 'Fallo de envío (' . implode( ' y ', $fallidos ) . ') el ' . current_time( 'mysql' ) .
+				( $motivo ? ': ' . $motivo : '' );
 			RSVP_Boda_Logger::error(
 				'enviar_correos',
 				'Fallo al enviar el correo de la confirmación',
@@ -236,6 +263,7 @@ class RSVP_Boda_Ajax {
 					'id_respuesta'  => $id,
 					'email_invitado_ok' => $ok_invitado,
 					'email_admin_ok'    => $ok_admin,
+					'motivo'            => $motivo,
 				)
 			);
 		} else {

@@ -138,6 +138,35 @@ function rsvp_boda_generar_token(): string {
 }
 
 /**
+ * Clave secreta del enlace general "con acompañante" (?c=clave). Se genera la primera vez que se
+ * pide y se guarda en su propia opción (fuera de rsvp_boda_settings, para que guardar los
+ * ajustes no la borre). Es aleatoria para que nadie pueda fabricarse el enlace con +1 a mano.
+ */
+function rsvp_boda_clave_enlace_mas_uno(): string {
+	$clave = (string) get_option( 'rsvp_boda_clave_mas_uno', '' );
+	if ( '' === $clave ) {
+		$clave = strtolower( wp_generate_password( 10, false ) );
+		update_option( 'rsvp_boda_clave_mas_uno', $clave, false );
+	}
+	return $clave;
+}
+
+/**
+ * Indica si la clave recibida (de la URL o del formulario) es la del enlace general con +1.
+ */
+function rsvp_boda_es_clave_mas_uno( string $clave ): bool {
+	return '' !== $clave && hash_equals( rsvp_boda_clave_enlace_mas_uno(), $clave );
+}
+
+/**
+ * Permiso de acompañante para quien entra SIN enlace personal: con el enlace general con +1
+ * siempre puede; con la web a secas, según el ajuste global.
+ */
+function rsvp_boda_permite_acompanantes_sin_slug( string $clave ): bool {
+	return rsvp_boda_es_clave_mas_uno( $clave ) || '1' === rsvp_boda_get_option( 'permite_acompanantes_sin_enlace', '0' );
+}
+
+/**
  * Hash de la IP del visitante (nunca se guarda en claro), usando una sal fija del propio WordPress.
  */
 function rsvp_boda_hash_ip( string $ip ): string {

@@ -34,6 +34,7 @@ class RSVP_Boda_List_Table extends WP_List_Table {
 			'alergias'         => 'Alergias / menú especial',
 			'menu_infantil'    => 'Menú infantil',
 			'bus'              => 'Bus',
+			'cancion'          => 'Canción',
 			'email_estado'     => 'Email',
 			'telefono'         => 'Teléfono',
 			'creado_en'        => 'Fecha',
@@ -62,6 +63,11 @@ class RSVP_Boda_List_Table extends WP_List_Table {
 				'<a href="%s"%s>Con alergias/menú especial</a>',
 				esc_url( add_query_arg( 'vista', 'alergias', $base ) ),
 				'alergias' === $vista_actual ? ' class="current"' : ''
+			),
+			'canciones'  => sprintf(
+				'<a href="%s"%s>Con canción</a>',
+				esc_url( add_query_arg( 'vista', 'canciones', $base ) ),
+				'canciones' === $vista_actual ? ' class="current"' : ''
 			),
 			'duplicados' => sprintf(
 				'<a href="%s"%s>Posibles duplicados (%d)</a>',
@@ -129,6 +135,15 @@ class RSVP_Boda_List_Table extends WP_List_Table {
 		return sprintf( '<span title="%s">%s</span>', esc_attr( $texto ), esc_html( $corto ) );
 	}
 
+	public function column_cancion( array $item ): string {
+		$texto = trim( (string) $item['cancion'] );
+		if ( '' === $texto ) {
+			return '&mdash;';
+		}
+		$corto = mb_strlen( $texto ) > 40 ? mb_substr( $texto, 0, 40 ) . '…' : $texto;
+		return sprintf( '<span title="%s">%s</span>', esc_attr( $texto ), esc_html( $corto ) );
+	}
+
 	public function column_bus( array $item ): string {
 		if ( 'si' !== $item['necesita_bus'] ) {
 			return '&mdash;';
@@ -146,7 +161,7 @@ class RSVP_Boda_List_Table extends WP_List_Table {
 		if ( '1' === (string) ( $item['email_enviado'] ?? '' ) ) {
 			return '<span class="rsvp-boda-badge rsvp-boda-badge--si">Enviado</span>';
 		}
-		return '&mdash;';
+		return empty( $item['email'] ) ? '<span title="El invitado no dejó email">Sin email</span>' : '&mdash;';
 	}
 
 	public function column_acciones( array $item ): string {
@@ -185,6 +200,8 @@ class RSVP_Boda_List_Table extends WP_List_Table {
 
 		if ( 'alergias' === $vista ) {
 			$where[] = "alergias IS NOT NULL AND alergias != ''";
+		} elseif ( 'canciones' === $vista ) {
+			$where[] = "cancion IS NOT NULL AND cancion != ''";
 		} elseif ( 'duplicados' === $vista ) {
 			if ( ! $this->ids_duplicados ) {
 				$where[] = '1=0';

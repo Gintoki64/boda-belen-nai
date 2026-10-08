@@ -1,7 +1,7 @@
 <?php
 /**
  * Markup del formulario RSVP. Variables recibidas desde rsvp_boda_render_form():
- * $slug, $invitado, $respuesta_previa, $permite_acompanantes, $nombre_prefijado, $paradas_bus.
+ * $slug, $clave_acceso, $invitado, $respuesta_previa, $permite_acompanantes, $nombre_prefijado, $paradas_bus.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -37,6 +37,7 @@ $email_valor     = $respuesta_previa['email'] ?? '';
 	<form id="rsvp-boda-form" class="rsvp-boda-form" novalidate>
 		<?php wp_nonce_field( RSVP_Boda_Ajax::NONCE_ACTION, 'nonce' ); ?>
 		<input type="hidden" name="guest_slug" value="<?php echo esc_attr( $slug ); ?>" />
+		<input type="hidden" name="acceso" value="<?php echo esc_attr( $clave_acceso ); ?>" />
 
 		<p class="rsvp-boda-campo rsvp-boda-honeypot" aria-hidden="true">
 			<label for="rsvp_boda_web">Deja este campo vacío</label>

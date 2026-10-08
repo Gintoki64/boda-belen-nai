@@ -55,9 +55,15 @@ function rsvp_boda_render_form(): void {
 		$respuesta_previa = rsvp_boda_respuesta_desde_cookie();
 	}
 
+	// Enlace general con +1 (?c=clave): solo cuenta si no hay enlace personal, que manda siempre.
+	$clave_acceso = sanitize_key( wp_unslash( $_GET['c'] ?? '' ) );
+	if ( $slug || ! rsvp_boda_es_clave_mas_uno( $clave_acceso ) ) {
+		$clave_acceso = '';
+	}
+
 	$permite_acompanantes = $invitado
 		? (bool) $invitado['permite_acompanantes']
-		: ( '1' === rsvp_boda_get_option( 'permite_acompanantes_sin_enlace', '0' ) );
+		: rsvp_boda_permite_acompanantes_sin_slug( $clave_acceso );
 
 	$nombre_prefijado = $invitado['nombre'] ?? '';
 

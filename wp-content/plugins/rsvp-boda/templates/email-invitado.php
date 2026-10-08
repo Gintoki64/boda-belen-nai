@@ -1,6 +1,6 @@
 <?php
 /**
- * Correo de resumen enviado al invitado tras confirmar. Variable disponible: $respuesta.
+ * Correo de resumen enviado al invitado tras confirmar o cambiar su respuesta. Variables: $respuesta, $es_cambio.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,6 +16,10 @@ $acompanantes = (array) json_decode( (string) $respuesta['acompanantes'], true )
 
 	<p>Hola <?php echo esc_html( $respuesta['nombre_completo'] ); ?>,</p>
 
+	<?php if ( ! empty( $es_cambio ) ) : ?>
+		<p>Hemos guardado los cambios en tu confirmación. Así queda ahora:</p>
+	<?php endif; ?>
+
 	<?php if ( 'si' === $respuesta['asiste'] ) : ?>
 		<p>¡Genial! Hemos apuntado que <strong>vienes</strong> a la boda<?php echo $respuesta['num_acompanantes'] > 0 ? ' junto a ' . esc_html( implode( ', ', $acompanantes ) ) : ''; ?>.</p>
 	<?php else : ?>
@@ -29,6 +33,10 @@ $acompanantes = (array) json_decode( (string) $respuesta['acompanantes'], true )
 
 	<?php if ( ! empty( $respuesta['alergias'] ) ) : ?>
 		<p><strong>Alergias/menú especial que nos has indicado:</strong> <?php echo esc_html( $respuesta['alergias'] ); ?></p>
+	<?php endif; ?>
+
+	<?php if ( ! empty( $respuesta['cancion'] ) ) : ?>
+		<p><strong>Tu canción:</strong> <?php echo esc_html( $respuesta['cancion'] ); ?> 🎶</p>
 	<?php endif; ?>
 
 	<p>Si algo cambia, puedes volver a entrar en el mismo enlace y actualizar tu respuesta cuando quieras.</p>

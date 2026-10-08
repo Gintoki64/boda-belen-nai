@@ -202,6 +202,59 @@ revisión.
   2026-10-02 sabiendo que con menos velo puede volver a notarse la costura del patrón cada 600px.
   El texto ya es legible por las tarjetas de sección. No volver a subirlo sin preguntar.
 
+## Cambios del 2026-10-06 (subidos por FTP y verificados el 2026-10-06; Brevo funcionando el 2026-10-08)
+
+- **Dos enlaces generales** (decisión del usuario: en vez de dar de alta a cada invitado):
+  la web a secas = sin +1; `?c=<clave>` = con +1. La clave es aleatoria, se guarda en la opción
+  `rsvp_boda_clave_mas_uno` (aparte de `rsvp_boda_settings` para que guardar ajustes no la borre)
+  y se vuelve a comprobar en el AJAX (campo oculto `acceso`). Se muestran arriba en
+  Boda → Invitados y enlaces. Para que la web a secas sea de verdad "sin +1", el ajuste
+  `permite_acompanantes_sin_enlace` tiene que estar desmarcado (la pantalla avisa si no).
+  Los enlaces personales `?i=slug` siguen funcionando igual y tienen prioridad.
+- **Canción visible en el panel**: columna "Canción", vista "Con canción" y lista desplegable
+  "Canciones pedidas" con botón de copiar (para el DJ) en Boda → Confirmaciones. Antes solo
+  estaba en la BD/CSV.
+- **Correos**: aviso a la pareja distingue "Nueva confirmación: Nombre" de "Cambio en una
+  confirmación: Nombre" (y lo mismo en el correo al invitado); `Reply-To` al invitado; el motivo
+  real del fallo (`wp_mail_failed`) se guarda en `email_error`; arreglado que a quien no dejaba
+  email se le marcaba "Fallo de envío"; puerto 465 usa SSL; botón "Enviar correo de prueba" al
+  final de Ajustes generales. Brevo configurado: dominio autenticado (TXT brevo-code, DKIM brevo1/brevo2, DMARC), buzón `boda@bodabelennai.es` creado en Hostinger, correo de prueba recibido. Pendiente: verificar el remitente `boda@bodabelennai.es` en Brevo (mientras no lo esté, Brevo lo reescribe como `boda@12374477.brevosend.com`).
+
+## Qué dar de baja cuando acabe la boda (lista pedida por el usuario el 2026-10-08)
+
+Ordenado por importancia: primero lo que cuesta dinero, luego datos personales, luego el resto.
+
+**Cuesta dinero (se renueva solo si no se cancela):**
+1. **Hosting de Hostinger**: hPanel → Facturación → Suscripciones → desactivar la renovación
+   automática del plan de hosting.
+2. **Dominio `bodabelennai.es`**: misma pantalla de suscripciones, desactivar la renovación
+   automática del dominio (o dejarlo caducar). Si se quiere conservar la web de recuerdo, mantener
+   solo esto y el hosting.
+3. **Buzón `boda@bodabelennai.es`** (hPanel → Emails): es gratuito con el hosting, pero muere con
+   él. Antes, revisar si hay respuestas de invitados que guardar.
+
+**Datos personales de invitados (teléfonos, emails, alergias = datos de salud):**
+4. Exportar a CSV lo que se quiera guardar (Boda → Confirmaciones → Exportar a CSV).
+5. Borrar los datos: el plugin solo borra sus tablas al desinstalarlo si antes se añade
+   `define( 'RSVP_BODA_BORRAR_AL_DESINSTALAR', true );` en `wp-config.php` (sin eso, desinstalar
+   NO borra nada, a propósito). Con la constante puesta: Plugins → desactivar "RSVP Boda" → Borrar.
+   Si se cancela el hosting entero, los datos se van con él igualmente.
+6. **Brevo** guarda copia de los correos enviados (nombres y emails de invitados): borrar la
+   cuenta en app.brevo.com → tu nombre → Ajustes de cuenta → eliminar cuenta (cuenta de
+   la cuenta de Gmail con la que se registró en Brevo, plan gratuito, no cobra nada).
+
+**Gratis, pero conviene cerrarlo:**
+7. **Brevo**: si no se borra la cuenta, al menos borrar la clave SMTP "BodaBelenNai" (SMTP y API
+   → SMTP; caduca sola el 2027-10-06).
+8. **Registros DNS de Brevo** en hPanel → Dominios → DNS (solo si se mantiene el dominio): TXT `@`
+   `brevo-code:…`, CNAME `brevo1._domainkey`, CNAME `brevo2._domainkey`, TXT `_dmarc`.
+9. **Adobe Fonts** (cuenta de Belén): quitar `bodabelennai.es` de los dominios del kit `gff0pqi`,
+   o borrar el kit.
+10. **GitHub**: el repo `Gintoki64/boda-belen-nai` es público — archivarlo o pasarlo a privado
+    (Settings → General → Danger Zone).
+11. **FileZilla**: borrar el sitio guardado "Boda Belen y nai" (guarda la contraseña FTP en el PC).
+12. Borrar la copia local de `public_html` con `wp-config.php` real si vuelve a aparecer por aquí.
+
 ## Cosas ya resueltas durante el despliegue (por si se repiten)
 
 - **Hostinger tiene DOS capas de caché independientes**: la de LiteSpeed/WordPress (la que se

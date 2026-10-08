@@ -57,3 +57,12 @@
 .rsvp-boda-enlace-input {
 	width: 280px;
 }
+
+.rsvp-boda-canciones {
+	margin: 0 0 16px;
+}
+
+.rsvp-boda-canciones summary {
+	cursor: pointer;
+	margin-bottom: 8px;
+}

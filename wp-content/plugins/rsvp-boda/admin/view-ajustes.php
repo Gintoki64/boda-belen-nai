@@ -110,4 +110,12 @@ function rsvp_boda_pintar_campo( array $campo, array $ajustes ): void {
 
 		<?php submit_button( 'Guardar ajustes' ); ?>
 	</form>
+
+	<h2>Comprobar el correo</h2>
+	<p>Guarda primero los ajustes de email y después pulsa aquí: se manda un correo de prueba al "Email de aviso a la pareja". Si falla, aquí arriba saldrá el motivo.</p>
+	<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+		<input type="hidden" name="action" value="rsvp_boda_email_prueba" />
+		<?php wp_nonce_field( 'rsvp_boda_email_prueba' ); ?>
+		<?php submit_button( 'Enviar correo de prueba', 'secondary', 'submit', false ); ?>
+	</form>
 </div>
