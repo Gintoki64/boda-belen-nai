@@ -259,6 +259,15 @@ revisión.
   una respuesta nueva" (campo `nueva=1`, crea fila nueva en vez de sobrescribir); botón "Generar
   un enlace +1 nuevo" en Invitados y enlaces (el enlace `?c` viejo deja de dar +1); límites de
   longitud en servidor; el correo al invitado incluye su enlace para volver.
+- Segunda tanda (mismo día): **columna nueva `con_mas_uno`** en `wp_rsvp_boda` (DB version
+  1.1.0) — se guarda si la respuesta se envió con permiso de +1, para que quien contestó "No" con
+  el enlace `?c` y luego vuelve por la web a secas pueda cambiar a "Sí" con acompañantes. Si se
+  baja `limite_acompanantes`, quien ya tenía más guardados los conserva al editar
+  (`rsvp_boda_limite_acompanantes()`). En Mesas, "Aplicar" cambia también la capacidad de las mesas
+  que seguían con la capacidad por defecto anterior (las ajustadas a mano se respetan). El CSS de
+  impresión solo afecta a la página de Mesas. **Orden de subida con cambios de esquema**: primero
+  el activator, luego `rsvp-boda.php` con la versión subida, cargar la web (migra) y por último el
+  código que usa la columna nueva.
 - Theme: `boda_theme_fecha_legible()` (functions.php) envuelve la función del plugin con
   `function_exists` → subir el theme antes que el plugin ya no da error 500.
 - **Despliegue sin FileZilla**: `curl --ssl-reqd -k --netrc-file <tmp> -T archivo

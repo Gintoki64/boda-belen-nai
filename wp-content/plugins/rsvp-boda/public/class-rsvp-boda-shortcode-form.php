@@ -90,7 +90,7 @@ function rsvp_boda_render_form(): void {
 		array(
 			'ajaxUrl'             => admin_url( 'admin-ajax.php' ),
 			'nonce'               => wp_create_nonce( RSVP_Boda_Ajax::NONCE_ACTION ),
-			'limiteAcompanantes'  => (int) rsvp_boda_get_option( 'limite_acompanantes', 6 ),
+			'limiteAcompanantes'  => rsvp_boda_limite_acompanantes( $respuesta_previa ),
 			'permiteAcompanantes' => $permite_acompanantes,
 			'permiteAcompanantesNueva' => $permite_acompanantes_nueva,
 		)

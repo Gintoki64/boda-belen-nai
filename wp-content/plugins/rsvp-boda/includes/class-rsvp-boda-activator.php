@@ -51,6 +51,7 @@ class RSVP_Boda_Activator {
 			asiste VARCHAR(3) NOT NULL,
 			num_acompanantes SMALLINT UNSIGNED NOT NULL DEFAULT 0,
 			acompanantes LONGTEXT NULL,
+			con_mas_uno TINYINT(1) NOT NULL DEFAULT 0,
 			alergias TEXT NULL,
 			menu_infantil VARCHAR(3) NOT NULL DEFAULT 'no',
 			necesita_bus VARCHAR(3) NOT NULL DEFAULT 'no',

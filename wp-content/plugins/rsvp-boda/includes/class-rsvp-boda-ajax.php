@@ -99,7 +99,10 @@ class RSVP_Boda_Ajax {
 			? (bool) $invitado['permite_acompanantes']
 			: ( rsvp_boda_permite_acompanantes_sin_slug( $clave_acceso ) || rsvp_boda_respuesta_conserva_acompanantes( $respuesta_cookie ) );
 
-		$resultado_acompanantes = $this->procesar_acompanantes( $asiste, $permite_acompanantes );
+		// Respuesta que se está editando (por slug o por cookie): su número de acompañantes guardado
+		// cuenta como límite mínimo, por si el ajuste se bajó después.
+		$respuesta_editada      = $slug ? RSVP_Boda_DB::obtener_respuesta_por_slug( $slug ) : $respuesta_cookie;
+		$resultado_acompanantes = $this->procesar_acompanantes( $asiste, $permite_acompanantes, rsvp_boda_limite_acompanantes( $respuesta_editada ) );
 		if ( is_string( $resultado_acompanantes ) ) {
 			// Nunca se descartan acompañantes en silencio: el invitado tiene que enterarse.
 			wp_send_json_error( array( 'mensaje' => $resultado_acompanantes ) );
@@ -116,6 +119,7 @@ class RSVP_Boda_Ajax {
 			'asiste'             => $asiste,
 			'num_acompanantes'   => $num_acompanantes,
 			'acompanantes'       => wp_json_encode( $acompanantes ),
+			'con_mas_uno'        => $permite_acompanantes ? 1 : 0,
 			'alergias'           => sanitize_textarea_field( wp_unslash( $_POST['alergias'] ?? '' ) ),
 			'menu_infantil'      => $menu_infantil,
 			'necesita_bus'       => $necesita_bus,
@@ -127,9 +131,7 @@ class RSVP_Boda_Ajax {
 		);
 
 		// Se mira antes de guardar si ya había respuesta, para avisar de "cambio" y no de "nueva".
-		$es_cambio = $slug
-			? null !== RSVP_Boda_DB::obtener_respuesta_por_slug( $slug )
-			: null !== $respuesta_cookie;
+		$es_cambio = null !== $respuesta_editada;
 
 		$id = $slug ? $this->guardar_con_slug( $slug, $datos ) : $this->guardar_sin_slug( $datos, $respuesta_cookie );
 
@@ -168,7 +170,7 @@ class RSVP_Boda_Ajax {
 	 *
 	 * @return array|string
 	 */
-	private function procesar_acompanantes( string $asiste, bool $permite_acompanantes ) {
+	private function procesar_acompanantes( string $asiste, bool $permite_acompanantes, int $limite ) {
 		if ( 'si' !== $asiste ) {
 			// Si no viene, no hay acompañantes que guardar (el JS ya quita esos campos al marcar "No").
 			return array( 0, array() );
@@ -198,7 +200,6 @@ class RSVP_Boda_Ajax {
 			return 'Con este enlace no se pueden añadir acompañantes, así que no hemos guardado tu respuesta. Si vienes con alguien más, avísanos.' . $contacto;
 		}
 
-		$limite = max( 0, (int) rsvp_boda_get_option( 'limite_acompanantes', 6 ) );
 		if ( count( $limpios ) > $limite ) {
 			return 0 === $limite
 				? 'Ahora mismo no se pueden añadir acompañantes, así que no hemos guardado tu respuesta.' . $contacto

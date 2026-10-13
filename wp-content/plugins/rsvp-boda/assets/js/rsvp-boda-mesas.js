@@ -410,6 +410,14 @@
 			} );
 		}
 
+		// Las mesas que seguían con la capacidad por defecto anterior pasan a la nueva; las que se
+		// ajustaron a mano (otra capacidad) se respetan.
+		$.each( estado.mesas, function ( i, mesa ) {
+			if ( mesa.capacidad === estado.comensales_defecto ) {
+				mesa.capacidad = comensales;
+			}
+		} );
+
 		estado.comensales_defecto = comensales;
 		marcarSucio();
 		pintar();

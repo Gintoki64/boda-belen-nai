@@ -198,12 +198,23 @@ function rsvp_boda_permite_acompanantes_sin_slug( string $clave ): bool {
 }
 
 /**
- * Quien ya respondió con acompañantes (p. ej. por el enlace ?c) y vuelve a editar desde la web
- * a secas (reconocido por la cookie de edición) conserva el permiso de +1: si no, al reenviar
- * perdería sus acompañantes sin enterarse. Mismo criterio al pintar el formulario y en el AJAX.
+ * Quien ya respondió con permiso de +1 (p. ej. por el enlace ?c) y vuelve a editar desde la web
+ * a secas (reconocido por la cookie de edición) conserva ese permiso: si no, al reenviar perdería
+ * sus acompañantes sin enterarse. `con_mas_uno` cubre también a quien respondió "No" con el enlace
+ * +1 y luego cambia a "Sí"; `num_acompanantes` cubre las filas guardadas antes de esa columna.
+ * Mismo criterio al pintar el formulario y en el AJAX.
  */
 function rsvp_boda_respuesta_conserva_acompanantes( ?array $respuesta ): bool {
-	return $respuesta && (int) ( $respuesta['num_acompanantes'] ?? 0 ) > 0;
+	return $respuesta && ( (int) ( $respuesta['con_mas_uno'] ?? 0 ) === 1 || (int) ( $respuesta['num_acompanantes'] ?? 0 ) > 0 );
+}
+
+/**
+ * Límite de acompañantes al editar una respuesta: si se bajó el ajuste después de que alguien
+ * guardara más, se le deja mantener los que ya tenía (si no, al reenviar perdería alguno).
+ */
+function rsvp_boda_limite_acompanantes( ?array $respuesta = null ): int {
+	$limite = max( 0, (int) rsvp_boda_get_option( 'limite_acompanantes', 6 ) );
+	return $respuesta ? max( $limite, (int) ( $respuesta['num_acompanantes'] ?? 0 ) ) : $limite;
 }
 
 /**

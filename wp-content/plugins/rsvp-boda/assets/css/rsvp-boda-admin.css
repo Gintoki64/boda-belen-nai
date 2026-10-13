@@ -361,31 +361,32 @@
 	}
 }
 
+/* Solo en la página de Mesas: el resto de pantallas del plugin se imprimen como siempre. */
 @media print {
-	#adminmenumain,
-	#wpadminbar,
-	#wpfooter,
-	.notice,
-	.update-nag,
-	.rsvp-boda-mesas > *:not(.rsvp-boda-mesas-impresion) {
+	body:has(.rsvp-boda-mesas) #adminmenumain,
+	body:has(.rsvp-boda-mesas) #wpadminbar,
+	body:has(.rsvp-boda-mesas) #wpfooter,
+	body:has(.rsvp-boda-mesas) .notice,
+	body:has(.rsvp-boda-mesas) .update-nag,
+	body:has(.rsvp-boda-mesas) .rsvp-boda-mesas > *:not(.rsvp-boda-mesas-impresion) {
 		display: none !important;
 	}
 
-	html.wp-toolbar {
+	html.wp-toolbar:has(.rsvp-boda-mesas) {
 		padding-top: 0;
 	}
 
-	#wpcontent,
-	#wpbody-content {
+	body:has(.rsvp-boda-mesas) #wpcontent,
+	body:has(.rsvp-boda-mesas) #wpbody-content {
 		margin: 0 !important;
 		padding: 0 !important;
 	}
 
-	.rsvp-boda-mesas {
+	body:has(.rsvp-boda-mesas) .rsvp-boda-mesas {
 		margin: 0;
 	}
 
-	.rsvp-boda-mesas-impresion {
+	body:has(.rsvp-boda-mesas) .rsvp-boda-mesas-impresion {
 		display: block;
 		columns: 2;
 		column-gap: 32px;
@@ -393,29 +394,29 @@
 		font-size: 12pt;
 	}
 
-	.rsvp-boda-mesas-impresion h1 {
+	body:has(.rsvp-boda-mesas) .rsvp-boda-mesas-impresion h1 {
 		column-span: all;
 		margin: 0 0 12pt;
 	}
 
-	.rsvp-boda-mesas-impresion__mesa {
+	body:has(.rsvp-boda-mesas) .rsvp-boda-mesas-impresion__mesa {
 		break-inside: avoid;
 		page-break-inside: avoid;
 		margin-bottom: 14pt;
 	}
 
-	.rsvp-boda-mesas-impresion h2 {
+	body:has(.rsvp-boda-mesas) .rsvp-boda-mesas-impresion h2 {
 		margin: 0 0 4pt;
 		font-size: 14pt;
 		border-bottom: 1px solid #000;
 	}
 
-	.rsvp-boda-mesas-impresion ol,
-	.rsvp-boda-mesas-impresion ul {
+	body:has(.rsvp-boda-mesas) .rsvp-boda-mesas-impresion ol,
+	body:has(.rsvp-boda-mesas) .rsvp-boda-mesas-impresion ul {
 		margin: 0 0 0 18pt;
 	}
 
-	.rsvp-boda-mesas-impresion__extra {
+	body:has(.rsvp-boda-mesas) .rsvp-boda-mesas-impresion__extra {
 		font-size: 10pt;
 		color: #444;
 	}
