@@ -61,9 +61,16 @@ function rsvp_boda_render_form(): void {
 		$clave_acceso = '';
 	}
 
-	$permite_acompanantes = $invitado
+	// Permiso para una respuesta nueva (sin contar la de la cookie): es el que vale si alguien
+	// pulsa "¿No eres …? Enviar una respuesta nueva" en este mismo navegador.
+	$permite_acompanantes_nueva = $invitado
 		? (bool) $invitado['permite_acompanantes']
 		: rsvp_boda_permite_acompanantes_sin_slug( $clave_acceso );
+
+	// Sin enlace personal, quien ya tenía acompañantes guardados (respondió por ?c y ahora entra
+	// por la web a secas) los sigue viendo y puede editarlos. Con ?i=slug manda la fila del invitado.
+	$permite_acompanantes = $permite_acompanantes_nueva
+		|| ( ! $slug && rsvp_boda_respuesta_conserva_acompanantes( $respuesta_previa ) );
 
 	$nombre_prefijado = $invitado['nombre'] ?? '';
 
@@ -85,6 +92,7 @@ function rsvp_boda_render_form(): void {
 			'nonce'               => wp_create_nonce( RSVP_Boda_Ajax::NONCE_ACTION ),
 			'limiteAcompanantes'  => (int) rsvp_boda_get_option( 'limite_acompanantes', 6 ),
 			'permiteAcompanantes' => $permite_acompanantes,
+			'permiteAcompanantesNueva' => $permite_acompanantes_nueva,
 		)
 	);
 

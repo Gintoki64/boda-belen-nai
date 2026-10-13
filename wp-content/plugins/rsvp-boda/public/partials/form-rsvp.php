@@ -22,8 +22,15 @@ $email_valor     = $respuesta_previa['email'] ?? '';
 <div class="rsvp-boda-form-wrap">
 
 	<?php if ( $respuesta_previa ) : ?>
-		<p class="rsvp-boda-aviso-previo" role="status">
+		<p class="rsvp-boda-aviso-previo" id="rsvp-boda-aviso-previo" role="status">
 			Ya habías confirmado tu asistencia. Puedes modificar tu respuesta y volver a enviarla cuando quieras.
+			<?php if ( ! $slug && '1' === rsvp_boda_get_option( 'formulario_activado', '1' ) ) : ?>
+				<?php // Mismo móvil para dos personas: sin esto, la segunda sobrescribiría la respuesta de la primera. ?>
+				<br />
+				<button type="button" class="rsvp-boda-nueva-respuesta" id="rsvp-boda-nueva-respuesta">
+					¿No eres <?php echo esc_html( $respuesta_previa['nombre_completo'] ); ?>? Enviar una respuesta nueva
+				</button>
+			<?php endif; ?>
 		</p>
 	<?php endif; ?>
 
@@ -38,6 +45,7 @@ $email_valor     = $respuesta_previa['email'] ?? '';
 		<?php wp_nonce_field( RSVP_Boda_Ajax::NONCE_ACTION, 'nonce' ); ?>
 		<input type="hidden" name="guest_slug" value="<?php echo esc_attr( $slug ); ?>" />
 		<input type="hidden" name="acceso" value="<?php echo esc_attr( $clave_acceso ); ?>" />
+		<input type="hidden" name="nueva" value="0" />
 
 		<p class="rsvp-boda-campo rsvp-boda-honeypot" aria-hidden="true">
 			<label for="rsvp_boda_web">Deja este campo vacío</label>
@@ -96,12 +104,12 @@ $email_valor     = $respuesta_previa['email'] ?? '';
 
 		<p class="rsvp-boda-campo">
 			<label for="rsvp-telefono">Teléfono de contacto <span class="rsvp-boda-obligatorio">*</span></label>
-			<input type="tel" id="rsvp-telefono" name="telefono" required value="<?php echo esc_attr( $telefono_valor ); ?>" />
+			<input type="tel" id="rsvp-telefono" name="telefono" required maxlength="30" value="<?php echo esc_attr( $telefono_valor ); ?>" />
 		</p>
 
 		<p class="rsvp-boda-campo">
 			<label for="rsvp-email">Email <span class="rsvp-boda-opcional">(opcional, para enviarte un resumen)</span></label>
-			<input type="email" id="rsvp-email" name="email" value="<?php echo esc_attr( $email_valor ); ?>" />
+			<input type="email" id="rsvp-email" name="email" maxlength="191" value="<?php echo esc_attr( $email_valor ); ?>" />
 		</p>
 
 		<div id="rsvp-boda-mensajes" role="alert" aria-live="assertive"></div>

@@ -1,6 +1,7 @@
 <?php
 /**
- * Correo de resumen enviado al invitado tras confirmar o cambiar su respuesta. Variables: $respuesta, $es_cambio.
+ * Correo de resumen enviado al invitado tras confirmar o cambiar su respuesta.
+ * Variables: $respuesta, $es_cambio, $url_volver (enlace con el que respondió: personal, con +1 o la web).
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,7 +28,7 @@ $acompanantes = (array) json_decode( (string) $respuesta['acompanantes'], true )
 	<?php endif; ?>
 
 	<p>
-		<strong>Fecha:</strong> <?php echo esc_html( rsvp_boda_get_option( 'fecha_boda' ) ); ?><br />
+		<strong>Fecha:</strong> <?php echo esc_html( rsvp_boda_fecha_legible( (string) rsvp_boda_get_option( 'fecha_boda' ) ) ); ?><br />
 		<strong>Ceremonia:</strong> <?php echo esc_html( rsvp_boda_get_option( 'hora_ceremonia' ) . ' — ' . rsvp_boda_get_option( 'lugar_ceremonia' ) ); ?>
 	</p>
 
@@ -39,7 +40,10 @@ $acompanantes = (array) json_decode( (string) $respuesta['acompanantes'], true )
 		<p><strong>Tu canción:</strong> <?php echo esc_html( $respuesta['cancion'] ); ?> 🎶</p>
 	<?php endif; ?>
 
-	<p>Si algo cambia, puedes volver a entrar en el mismo enlace y actualizar tu respuesta cuando quieras.</p>
+	<?php $url_volver = ! empty( $url_volver ) ? $url_volver : rsvp_boda_get_landing_url(); ?>
+	<p>Si algo cambia, puedes volver a entrar en el mismo enlace y actualizar tu respuesta cuando quieras:<br />
+		<a href="<?php echo esc_url( $url_volver ); ?>" style="color:#1f3a6e;"><?php echo esc_html( $url_volver ); ?></a>
+	</p>
 
 	<p>Cualquier duda, llámanos al <?php echo esc_html( rsvp_boda_get_option( 'telefono_contacto' ) ); ?>.</p>
 </div>

@@ -66,3 +66,357 @@
 	cursor: pointer;
 	margin-bottom: 8px;
 }
+
+/* ---------- Mesas ---------- */
+
+.rsvp-boda-mesas-ayuda {
+	max-width: 800px;
+	color: #646970;
+}
+
+.rsvp-boda-mesas-controles {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 12px;
+	margin: 0 0 16px;
+	padding: 12px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+}
+
+.rsvp-boda-mesas-controles label {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.rsvp-boda-mesas-controles__separador {
+	flex: 1 1 auto;
+}
+
+.rsvp-boda-mesas-estado {
+	font-size: 13px;
+}
+
+.rsvp-boda-mesas-estado.is-pendiente {
+	color: #8a6d00;
+}
+
+.rsvp-boda-mesas-estado.is-ok {
+	color: #1e7e34;
+}
+
+.rsvp-boda-mesas-estado.is-error {
+	color: #a02622;
+	font-weight: 600;
+}
+
+.rsvp-boda-mesas-tablero {
+	display: flex;
+	align-items: flex-start;
+	gap: 16px;
+}
+
+.rsvp-boda-mesas-libres {
+	flex: 0 0 280px;
+	position: sticky;
+	top: 46px;
+	max-height: calc(100vh - 70px);
+	overflow-y: auto;
+	padding: 12px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	box-sizing: border-box;
+}
+
+.rsvp-boda-mesas-libres h2 {
+	margin: 0 0 8px;
+	font-size: 15px;
+}
+
+.rsvp-boda-mesas-libres__contador {
+	display: inline-block;
+	min-width: 20px;
+	padding: 0 6px;
+	border-radius: 10px;
+	background: #f0f0f1;
+	font-size: 12px;
+	text-align: center;
+}
+
+.rsvp-boda-mesas-libres__buscar {
+	width: 100%;
+	margin-bottom: 8px;
+}
+
+.rsvp-boda-mesas-manual {
+	margin-top: 12px;
+	padding-top: 8px;
+	border-top: 1px solid #f0f0f1;
+}
+
+.rsvp-boda-mesas-manual summary {
+	cursor: pointer;
+	font-weight: 600;
+}
+
+.rsvp-boda-mesas-rejilla {
+	flex: 1 1 auto;
+	min-width: 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+	gap: 12px;
+	align-items: start;
+}
+
+.rsvp-boda-mesas-vacio {
+	grid-column: 1 / -1;
+	color: #646970;
+}
+
+.rsvp-boda-mesas-mesa {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	padding: 10px;
+}
+
+.rsvp-boda-mesas-mesa__cabecera {
+	margin-bottom: 8px;
+}
+
+.rsvp-boda-mesas-mesa__nombre {
+	width: 100%;
+	font-weight: 600;
+}
+
+.rsvp-boda-mesas-mesa__fila {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 6px;
+}
+
+.rsvp-boda-mesas-mesa__contador {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 13px;
+}
+
+.rsvp-boda-mesas-mesa__contador.is-lleno {
+	color: #a02622;
+	font-weight: 600;
+}
+
+.rsvp-boda-mesas-mesa__capacidad {
+	width: 60px;
+}
+
+.rsvp-boda-mesas-mesa__vaciar:disabled {
+	color: #a7aaad;
+	cursor: default;
+}
+
+.rsvp-boda-mesas-lista {
+	min-height: 44px;
+	margin: 0;
+	padding: 4px;
+	list-style: none;
+	border: 1px dashed #dcdcde;
+	border-radius: 4px;
+}
+
+.rsvp-boda-mesas-persona {
+	position: relative;
+	margin: 0 0 4px;
+	padding: 6px 26px 6px 8px;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	cursor: move;
+	line-height: 1.35;
+}
+
+.rsvp-boda-mesas-persona:last-child {
+	margin-bottom: 0;
+}
+
+.rsvp-boda-mesas-persona--acompanante {
+	background: #fbfbfc;
+}
+
+.rsvp-boda-mesas-persona--manual {
+	border-style: dashed;
+}
+
+.rsvp-boda-mesas-persona.is-seleccionada {
+	border-color: #2271b1;
+	box-shadow: 0 0 0 2px #2271b1;
+	background: #f0f6fc;
+}
+
+.rsvp-boda-mesas-persona:focus {
+	outline: 2px solid #2271b1;
+	outline-offset: 1px;
+}
+
+.rsvp-boda-mesas-persona__nombre {
+	font-weight: 600;
+}
+
+.rsvp-boda-mesas-persona__detalle {
+	display: block;
+	color: #646970;
+	font-size: 12px;
+}
+
+.rsvp-boda-mesas-persona__insignias {
+	margin-left: 4px;
+}
+
+.rsvp-boda-mesas-insignia {
+	display: inline-block;
+	margin: 0 0 0 2px;
+	padding: 0 6px;
+	border-radius: 10px;
+	background: #f0f0f1;
+	color: #50575e;
+	font-size: 11px;
+	cursor: help;
+}
+
+.rsvp-boda-mesas-insignia--infantil {
+	background: #e5f5fa;
+	color: #135e96;
+}
+
+.rsvp-boda-mesas-insignia--alergias {
+	background: #fff8e5;
+	color: #8a6d00;
+}
+
+.rsvp-boda-mesas-persona__borrar {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: #a02622;
+	font-size: 16px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.rsvp-boda-mesas-hueco {
+	height: 28px;
+	margin: 0 0 4px;
+	list-style: none;
+	background: #f0f6fc;
+	border: 1px dashed #2271b1;
+	visibility: visible !important;
+}
+
+/* Con alguien seleccionado, los destinos se resaltan para indicar que se pueden tocar. */
+.rsvp-boda-mesas.hay-seleccion .rsvp-boda-mesas-mesa,
+.rsvp-boda-mesas.hay-seleccion .rsvp-boda-mesas-libres__cabecera {
+	cursor: pointer;
+}
+
+.rsvp-boda-mesas.hay-seleccion .rsvp-boda-mesas-lista {
+	border-color: #2271b1;
+	background: #f6fafd;
+}
+
+.rsvp-boda-mesas-impresion {
+	display: none;
+}
+
+@media screen and (max-width: 782px) {
+	.rsvp-boda-mesas-tablero {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.rsvp-boda-mesas-libres {
+		flex-basis: auto;
+		position: static;
+		max-height: none;
+	}
+
+	.rsvp-boda-mesas-persona {
+		padding-top: 10px;
+		padding-bottom: 10px;
+	}
+
+	.rsvp-boda-mesas-persona__borrar {
+		width: 32px;
+		height: 32px;
+	}
+}
+
+@media print {
+	#adminmenumain,
+	#wpadminbar,
+	#wpfooter,
+	.notice,
+	.update-nag,
+	.rsvp-boda-mesas > *:not(.rsvp-boda-mesas-impresion) {
+		display: none !important;
+	}
+
+	html.wp-toolbar {
+		padding-top: 0;
+	}
+
+	#wpcontent,
+	#wpbody-content {
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+
+	.rsvp-boda-mesas {
+		margin: 0;
+	}
+
+	.rsvp-boda-mesas-impresion {
+		display: block;
+		columns: 2;
+		column-gap: 32px;
+		color: #000;
+		font-size: 12pt;
+	}
+
+	.rsvp-boda-mesas-impresion h1 {
+		column-span: all;
+		margin: 0 0 12pt;
+	}
+
+	.rsvp-boda-mesas-impresion__mesa {
+		break-inside: avoid;
+		page-break-inside: avoid;
+		margin-bottom: 14pt;
+	}
+
+	.rsvp-boda-mesas-impresion h2 {
+		margin: 0 0 4pt;
+		font-size: 14pt;
+		border-bottom: 1px solid #000;
+	}
+
+	.rsvp-boda-mesas-impresion ol,
+	.rsvp-boda-mesas-impresion ul {
+		margin: 0 0 0 18pt;
+	}
+
+	.rsvp-boda-mesas-impresion__extra {
+		font-size: 10pt;
+		color: #444;
+	}
+}

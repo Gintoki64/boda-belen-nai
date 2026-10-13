@@ -58,7 +58,7 @@ class RSVP_Boda_Email {
 	 * Envía el correo de resumen al invitado. Devuelve true/false y no lanza excepciones:
 	 * un fallo de email nunca debe interrumpir el flujo de guardado del RSVP.
 	 */
-	public static function enviar_confirmacion_invitado( array $respuesta, bool $es_cambio = false ): bool {
+	public static function enviar_confirmacion_invitado( array $respuesta, bool $es_cambio = false, string $url_volver = '' ): bool {
 		// El email es un campo opcional del formulario (el prompt original solo pedía teléfono,
 		// pero el propio prompt exige mandar un correo resumen al invitado, así que se añadió
 		// como campo extra opcional para poder cumplir ese requisito sin forzarlo).
@@ -72,8 +72,9 @@ class RSVP_Boda_Email {
 		$cuerpo = self::renderizar_plantilla(
 			'email-invitado.php',
 			array(
-				'respuesta' => $respuesta,
-				'es_cambio' => $es_cambio,
+				'respuesta'  => $respuesta,
+				'es_cambio'  => $es_cambio,
+				'url_volver' => '' !== $url_volver ? $url_volver : rsvp_boda_get_landing_url(),
 			)
 		);
 

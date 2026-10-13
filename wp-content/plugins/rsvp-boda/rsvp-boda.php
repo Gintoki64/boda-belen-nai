@@ -27,6 +27,7 @@ require_once RSVP_BODA_PLUGIN_DIR . 'includes/class-rsvp-boda-invitados.php';
 require_once RSVP_BODA_PLUGIN_DIR . 'includes/class-rsvp-boda-email.php';
 require_once RSVP_BODA_PLUGIN_DIR . 'includes/class-rsvp-boda-ajax.php';
 require_once RSVP_BODA_PLUGIN_DIR . 'includes/class-rsvp-boda-cache.php';
+require_once RSVP_BODA_PLUGIN_DIR . 'includes/class-rsvp-boda-mesas.php';
 require_once RSVP_BODA_PLUGIN_DIR . 'admin/class-rsvp-boda-list-table.php';
 require_once RSVP_BODA_PLUGIN_DIR . 'admin/class-rsvp-boda-admin.php';
 require_once RSVP_BODA_PLUGIN_DIR . 'public/class-rsvp-boda-shortcode-form.php';
@@ -47,6 +48,7 @@ function rsvp_boda_cargar_modulos(): void {
 	new RSVP_Boda_Email();
 	new RSVP_Boda_Ajax();
 	new RSVP_Boda_Cache();
+	new RSVP_Boda_Mesas();
 	new RSVP_Boda_Admin();
 	new RSVP_Boda_Shortcode_Form();
 }

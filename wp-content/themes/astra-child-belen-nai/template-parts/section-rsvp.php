@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="boda-seccion__contenido">
 		<h2 class="boda-seccion__titulo">Confirma tu asistencia</h2>
 		<?php if ( rsvp_boda_get_option( 'fecha_limite_confirmar' ) ) : ?>
-			<p class="boda-rsvp__limite">Por favor, confirma antes del <?php echo esc_html( rsvp_boda_get_option( 'fecha_limite_confirmar' ) ); ?>.</p>
+			<p class="boda-rsvp__limite">Por favor, confirma antes del <?php echo esc_html( boda_theme_fecha_legible( rsvp_boda_get_option( 'fecha_limite_confirmar' ) ) ); ?>.</p>
 		<?php endif; ?>
 
 		<?php

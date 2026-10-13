@@ -220,6 +220,77 @@ revisión.
   email se le marcaba "Fallo de envío"; puerto 465 usa SSL; botón "Enviar correo de prueba" al
   final de Ajustes generales. Brevo configurado: dominio autenticado (TXT brevo-code, DKIM brevo1/brevo2, DMARC), buzón `boda@bodabelennai.es` creado en Hostinger, correo de prueba recibido. Pendiente: verificar el remitente `boda@bodabelennai.es` en Brevo (mientras no lo esté, Brevo lo reescribe como `boda@12374477.brevosend.com`).
 
+## Cambios del 2026-10-08 (revisión con Claude in Chrome)
+
+- **Ajustes generales tocados directamente en producción** (guardados y verificados en la web):
+  desmarcado `permite_acompanantes_sin_enlace` (estaba activado y la web a secas dejaba poner +6);
+  `bus_paradas` pasado al formato `Parada;Hora` (Nervión Plaza;10:30 / Torneo;10:45 — **horas de
+  ejemplo**); corregido "e sun pueblo" / "habra" en aparcamiento. Rellenados **con contenido de
+  ejemplo** (el usuario lo pidió para ver cómo queda; revisar antes de la boda): mapas embebidos
+  de ceremonia y banquete, dirección del banquete ("Lucena del Puerto, Huelva"), alojamiento,
+  vestimenta, texto y titular de regalos, título/descripción para compartir. **IBAN sin rellenar**
+  (lo tiene que poner el usuario). Los campos que ya tenían texto no se tocaron.
+- **Fechas legibles** ("13 de febrero de 2027"): nueva `rsvp_boda_fecha_legible()` en
+  `helpers.php` del plugin, usada en portada, pie, sección RSVP y correo al invitado.
+  **Subir primero el plugin** (`helpers.php`) y después el theme: el theme llama a esa función.
+  - Al subirlo hubo un **"Ha habido un error crítico en esta web"** (portada 500, wp-admin sí
+    cargaba): el theme nuevo ya estaba en el servidor pero `helpers.php` no se había sobrescrito.
+    Se arregló volviendo a subir `helpers.php` (debe pesar 6945 bytes). **Subido y verificado en
+    producción** con `curl`: la portada dice "13 de febrero de 2027" y el RSVP "13 de enero de 2027".
+  - Copia de los 4 archivos anteriores (por si hay que revertir) en
+    `C:\Users\knigh\Desktop\boda-revertir-fechas\`; ya no hace falta, se puede borrar.
+  - Lección: cualquier función nueva del plugin que use el theme → comprobar tras subir que la
+    portada responde 200 antes de dar el despliegue por bueno.
+
+## Cambios del 2026-10-13 (subidos por FTPS y verificados en producción el mismo día)
+
+- **Nueva página Boda → Mesas** (`includes/class-rsvp-boda-mesas.php`, `admin/view-mesas.php`,
+  `assets/js/rsvp-boda-mesas.js`): nº de mesas + comensales por defecto (solo se aplica a mesas
+  nuevas; cada mesa tiene nombre y capacidad propios), arrastrar con jQuery UI sortable o tocar
+  tarjeta → tocar mesa (móvil), personas añadidas a mano, imprimir. Aparecen los confirmados con
+  "sí" y cada acompañante como tarjeta aparte. Todo en la opción `rsvp_boda_mesas` (autoload no),
+  claves de persona `r{respuesta_id}-{n}` (0 = titular) y `m{id}` (a mano). Control de versión:
+  si Belén y Nai guardan a la vez, el segundo recibe 409 "Otra persona ha cambiado las mesas".
+  Probado en producción (arrastrar, tocar, guardar, recargar, conflicto) y dejado vacío.
+- **Arreglos de los dos enlaces / formulario**: quien confirmó con `?c` y vuelve por la web a secas
+  (cookie) ya no pierde sus acompañantes (`rsvp_boda_respuesta_conserva_acompanantes()`, misma
+  regla en render y AJAX); si llegan acompañantes sin permiso → error, nunca se descartan en
+  silencio; JS conserva nombres al cambiar el número y al pasar No → Sí; botón "¿No eres X? Enviar
+  una respuesta nueva" (campo `nueva=1`, crea fila nueva en vez de sobrescribir); botón "Generar
+  un enlace +1 nuevo" en Invitados y enlaces (el enlace `?c` viejo deja de dar +1); límites de
+  longitud en servidor; el correo al invitado incluye su enlace para volver.
+- Theme: `boda_theme_fecha_legible()` (functions.php) envuelve la función del plugin con
+  `function_exists` → subir el theme antes que el plugin ya no da error 500.
+- **Despliegue sin FileZilla**: `curl --ssl-reqd -k --netrc-file <tmp> -T archivo
+  ftp://<IP>/domains/bodabelennai.es/public_html/wp-content/...` (ojo: la raíz FTP es la cuenta,
+  el sitio está en `domains/bodabelennai.es/public_html/`). Credenciales sacadas en el momento
+  del sitio guardado de FileZilla a un netrc temporal en el scratchpad, borrado al terminar. Antes
+  de subir, descargar copia de los archivos remotos; después, comparar con `cmp` y comprobar 200.
+- PHP CLI local disponible para `php -l`:
+  `C:\Users\knigh\AppData\Local\Microsoft\WinGet\Packages\PHP.PHP.8.3_Microsoft.Winget.Source_8wekyb3d8bbwe\php.exe`.
+
+## Claude in Chrome (desde el 2026-10-08)
+
+- **Se puede usar Claude in Chrome para todo en este proyecto**: revisar la web pública, leer y
+  cambiar **Boda → Ajustes generales** en wp-admin (el usuario inicia sesión; Claude nunca mete
+  contraseñas) y verificar en la web real tras cada cambio. Probado el 2026-10-08 con éxito.
+- Trucos aprendidos:
+  - La página de ajustes caduca si lleva mucho rato abierta ("El enlace que has seguido ha
+    caducado" al guardar) → recargar `wp-admin/admin.php?page=rsvp-boda-ajustes` justo antes de
+    rellenar y guardar.
+  - Los campos se rellenan por JS con `[name="rsvp_boda_settings[clave]"]`; los de contenido
+    enriquecido (`alojamiento_html`, `vestimenta_html`, historia) son TinyMCE: usar
+    `tinymce.get(id).setContent(...)` + `.save()`.
+  - `read_page`/`find` fallan en wp-admin ("Page script returned empty result"); usar
+    `javascript_tool` y `get_page_text`.
+  - La ventana de Chrome está maximizada y `resize_window` no la cambia → la vista móvil no se
+    puede probar así.
+  - Al enviar el RSVP desde ese Chrome, la cookie `rsvp_boda_edicion` hace que se **sobrescriba**
+    la respuesta de prueba anterior del usuario, no se crea una nueva. El envío real en producción
+    lo bloqueó el modo automático; pedir permiso explícito o que lo envíe el usuario.
+- Sigue pendiente: **IBAN** (Claude no puede introducir números de cuenta, lo pone el usuario),
+  horas reales de las paradas del bus, y probar un envío real del RSVP.
+
 ## Qué dar de baja cuando acabe la boda (lista pedida por el usuario el 2026-10-08)
 
 Ordenado por importancia: primero lo que cuesta dinero, luego datos personales, luego el resto.

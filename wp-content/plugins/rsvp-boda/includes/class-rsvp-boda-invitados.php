@@ -13,6 +13,7 @@ class RSVP_Boda_Invitados {
 		add_action( 'admin_post_rsvp_boda_importar_invitados', array( $this, 'manejar_importacion' ) );
 		add_action( 'admin_post_rsvp_boda_guardar_invitado', array( $this, 'manejar_guardar_invitado' ) );
 		add_action( 'admin_post_rsvp_boda_eliminar_invitado', array( $this, 'manejar_eliminar_invitado' ) );
+		add_action( 'admin_post_rsvp_boda_regenerar_clave', array( $this, 'manejar_regenerar_clave' ) );
 	}
 
 	public static function obtener_por_slug( string $slug ): ?array {
@@ -44,7 +45,10 @@ class RSVP_Boda_Invitados {
 		);
 	}
 
-	public static function agregar( string $nombre, string $grupo, bool $permite_acompanantes, string $slug_deseado = '' ): int|false {
+	/**
+	 * @return int|false Id del invitado nuevo, o false si falla (sin tipo de retorno unión: PHP 7.4).
+	 */
+	public static function agregar( string $nombre, string $grupo, bool $permite_acompanantes, string $slug_deseado = '' ) {
 		global $wpdb;
 
 		$slug = $slug_deseado ? rsvp_boda_generar_slug_unico( $slug_deseado ) : rsvp_boda_generar_slug_unico( $nombre );
@@ -191,6 +195,22 @@ class RSVP_Boda_Invitados {
 		self::eliminar( absint( $_POST['id'] ?? 0 ) );
 
 		$this->redirigir_con_aviso( 'success', 'Invitado eliminado.' );
+	}
+
+	/**
+	 * "Generar un enlace +1 nuevo": cambia la clave del enlace general ?c por si se ha difundido
+	 * más de la cuenta. El enlace viejo deja de dar +1; quien ya respondió con él conserva sus
+	 * acompañantes guardados (y los puede seguir editando desde el mismo móvil).
+	 */
+	public function manejar_regenerar_clave(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'No tienes permiso para hacer esto.' );
+		}
+		check_admin_referer( 'rsvp_boda_regenerar_clave' );
+
+		update_option( 'rsvp_boda_clave_mas_uno', rsvp_boda_generar_clave_mas_uno(), false );
+
+		$this->redirigir_con_aviso( 'success', 'Enlace con +1 nuevo generado. El anterior ya no deja añadir acompañantes: manda el nuevo a quien aún no haya respondido.' );
 	}
 
 	private function redirigir_con_aviso( string $tipo, string $mensaje ): void {

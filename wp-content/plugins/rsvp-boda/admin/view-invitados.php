@@ -30,6 +30,11 @@ function rsvp_boda_url_invitado( string $slug, string $url_base ): string {
 				<input type="text" readonly id="rsvp-boda-enlace-general-con" class="regular-text" value="<?php echo esc_url( $url_con_mas_uno ); ?>" onclick="this.select()" />
 				<button type="button" class="button rsvp-boda-copiar" data-copiar="rsvp-boda-enlace-general-con">Copiar</button>
 				<p class="description">El formulario deja añadir acompañantes. La parte final del enlace es una clave: si se cambia a mano, deja de dar el +1.</p>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return confirm('¿Generar un enlace +1 nuevo?\n\nEl enlace actual dejará de permitir acompañantes: tendrás que mandar el nuevo a quien aún no haya respondido.\n\nQuien ya respondió con el enlace actual conserva sus acompañantes.');" style="margin-top:0.5em;">
+					<input type="hidden" name="action" value="rsvp_boda_regenerar_clave" />
+					<?php wp_nonce_field( 'rsvp_boda_regenerar_clave' ); ?>
+					<button type="submit" class="button">Generar un enlace +1 nuevo</button>
+				</form>
 			</td>
 		</tr>
 		<tr>

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<p>
 		<?php echo esc_html( rsvp_boda_get_option( 'nombre_1' ) . ' & ' . rsvp_boda_get_option( 'nombre_2' ) ); ?>
 		&middot;
-		<?php echo esc_html( rsvp_boda_get_option( 'fecha_boda' ) ); ?>
+		<?php echo esc_html( boda_theme_fecha_legible( rsvp_boda_get_option( 'fecha_boda' ) ) ); ?>
 	</p>
 </footer>
 

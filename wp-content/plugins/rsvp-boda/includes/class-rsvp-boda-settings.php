@@ -24,6 +24,27 @@ class RSVP_Boda_Settings {
 		wp_enqueue_media();
 		wp_enqueue_style( 'rsvp-boda-admin', RSVP_BODA_PLUGIN_URL . 'assets/css/rsvp-boda-admin.css', array(), (string) filemtime( RSVP_BODA_PLUGIN_DIR . 'assets/css/rsvp-boda-admin.css' ) );
 		wp_enqueue_script( 'rsvp-boda-admin', RSVP_BODA_PLUGIN_URL . 'assets/js/rsvp-boda-admin.js', array( 'jquery' ), (string) filemtime( RSVP_BODA_PLUGIN_DIR . 'assets/js/rsvp-boda-admin.js' ), true );
+
+		if ( false !== strpos( $hoja, 'rsvp-boda-mesas' ) ) {
+			wp_enqueue_script( 'rsvp-boda-mesas', RSVP_BODA_PLUGIN_URL . 'assets/js/rsvp-boda-mesas.js', array( 'jquery', 'jquery-ui-sortable' ), (string) filemtime( RSVP_BODA_PLUGIN_DIR . 'assets/js/rsvp-boda-mesas.js' ), true );
+
+			// wp_add_inline_script en vez de wp_localize_script para conservar números y booleanos.
+			$estado   = RSVP_Boda_Mesas::obtener();
+			$personas = RSVP_Boda_Mesas::personas( $estado['manuales'] );
+			$datos    = array(
+				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
+				'nonce'    => wp_create_nonce( 'rsvp_boda_mesas' ),
+				'estado'   => $estado,
+				'personas' => $personas,
+				'limites'  => array(
+					'mesas'     => RSVP_Boda_Mesas::MAX_MESAS,
+					'capacidad' => RSVP_Boda_Mesas::MAX_CAPACIDAD,
+					'nombre'    => RSVP_Boda_Mesas::MAX_LARGO_NOMBRE,
+					'nota'      => RSVP_Boda_Mesas::MAX_LARGO_NOTA,
+				),
+			);
+			wp_add_inline_script( 'rsvp-boda-mesas', 'var rsvpBodaMesas = ' . wp_json_encode( $datos ) . ';', 'before' );
+		}
 	}
 
 	/**

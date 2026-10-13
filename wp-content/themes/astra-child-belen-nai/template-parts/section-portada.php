@@ -28,7 +28,7 @@ $fecha_iso     = trim( $fecha_boda . 'T' . ( $hora_ceremonia ?: '00:00' ) );
 		</h1>
 
 		<?php if ( $fecha_boda ) : ?>
-			<p class="boda-portada__fecha"><?php echo esc_html( $fecha_boda ); ?></p>
+			<p class="boda-portada__fecha"><?php echo esc_html( boda_theme_fecha_legible( $fecha_boda ) ); ?></p>
 		<?php endif; ?>
 
 		<div id="boda-countdown" class="boda-countdown" data-fecha="<?php echo esc_attr( $fecha_iso ); ?>" aria-live="off">

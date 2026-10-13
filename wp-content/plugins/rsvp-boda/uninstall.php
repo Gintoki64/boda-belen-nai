@@ -21,3 +21,4 @@ $wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'rsvp_boda_invitados' );
 delete_option( 'rsvp_boda_settings' );
 delete_option( 'rsvp_boda_db_version' );
 delete_option( 'rsvp_boda_clave_mas_uno' );
+delete_option( 'rsvp_boda_mesas' );

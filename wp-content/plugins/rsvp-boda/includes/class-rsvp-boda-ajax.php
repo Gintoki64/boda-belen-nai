@@ -46,10 +46,16 @@ class RSVP_Boda_Ajax {
 
 		$slug = sanitize_title( wp_unslash( $_POST['guest_slug'] ?? '' ) );
 
-		$nombre_completo = sanitize_text_field( wp_unslash( $_POST['nombre_completo'] ?? '' ) );
+		// Recortes a la longitud de cada columna VARCHAR: en MySQL estricto un valor más largo hace
+		// fallar el guardado entero (el formulario ya lleva maxlength, esto es por si se salta).
+		$nombre_completo = rsvp_boda_recortar( sanitize_text_field( wp_unslash( $_POST['nombre_completo'] ?? '' ) ), 191 );
 		$asiste          = in_array( $_POST['asiste'] ?? '', array( 'si', 'no' ), true ) ? $_POST['asiste'] : '';
-		$telefono        = sanitize_text_field( wp_unslash( $_POST['telefono'] ?? '' ) );
+		$telefono        = rsvp_boda_recortar( sanitize_text_field( wp_unslash( $_POST['telefono'] ?? '' ) ), 30 );
 		$email           = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
+		// Un email recortado sería otra dirección: si no cabe, se descarta (es opcional).
+		if ( strlen( $email ) > 191 ) {
+			$email = '';
+		}
 
 		$errores = array();
 		if ( '' === $nombre_completo ) {
@@ -75,20 +81,38 @@ class RSVP_Boda_Ajax {
 		}
 		// Enlace general con +1: la clave se vuelve a comprobar aquí, nunca se fía del formulario.
 		$clave_acceso = $slug ? '' : sanitize_key( wp_unslash( $_POST['acceso'] ?? '' ) );
+		if ( ! rsvp_boda_es_clave_mas_uno( $clave_acceso ) ) {
+			$clave_acceso = '';
+		}
 
+		// "¿No eres …? Enviar una respuesta nueva": otra persona en el mismo navegador. Se ignora
+		// la respuesta de la cookie y se crea una fila nueva. Con enlace personal no aplica (upsert por slug).
+		$nueva = ! $slug && '1' === ( $_POST['nueva'] ?? '' );
+
+		// Respuesta que se va a editar por la cookie (sin enlace personal y sin "respuesta nueva").
+		$respuesta_cookie = ( $slug || $nueva ) ? null : $this->respuesta_desde_cookie_edicion();
+
+		// Con ?i=slug el permiso sale siempre de la fila del invitado. Sin él: clave ?c o ajuste
+		// global, y además quien ya tenía acompañantes guardados los conserva al editar desde la
+		// web a secas (mismo criterio que rsvp_boda_render_form()).
 		$permite_acompanantes = $invitado
 			? (bool) $invitado['permite_acompanantes']
-			: rsvp_boda_permite_acompanantes_sin_slug( $clave_acceso );
+			: ( rsvp_boda_permite_acompanantes_sin_slug( $clave_acceso ) || rsvp_boda_respuesta_conserva_acompanantes( $respuesta_cookie ) );
 
-		list( $num_acompanantes, $acompanantes ) = $this->procesar_acompanantes( $asiste, $permite_acompanantes );
+		$resultado_acompanantes = $this->procesar_acompanantes( $asiste, $permite_acompanantes );
+		if ( is_string( $resultado_acompanantes ) ) {
+			// Nunca se descartan acompañantes en silencio: el invitado tiene que enterarse.
+			wp_send_json_error( array( 'mensaje' => $resultado_acompanantes ) );
+		}
+		list( $num_acompanantes, $acompanantes ) = $resultado_acompanantes;
 
 		$necesita_bus = in_array( $_POST['necesita_bus'] ?? '', array( 'si', 'no' ), true ) ? $_POST['necesita_bus'] : 'no';
-		$parada_bus   = 'si' === $necesita_bus ? sanitize_text_field( wp_unslash( $_POST['parada_bus'] ?? '' ) ) : '';
+		$parada_bus   = 'si' === $necesita_bus ? rsvp_boda_recortar( sanitize_text_field( wp_unslash( $_POST['parada_bus'] ?? '' ) ), 191 ) : '';
 		$menu_infantil = in_array( $_POST['menu_infantil'] ?? '', array( 'si', 'no' ), true ) ? $_POST['menu_infantil'] : 'no';
 
 		$datos = array(
 			'nombre_completo'    => $nombre_completo,
-			'nombre_normalizado' => rsvp_boda_normalizar_nombre( $nombre_completo ),
+			'nombre_normalizado' => rsvp_boda_recortar( rsvp_boda_normalizar_nombre( $nombre_completo ), 191 ),
 			'asiste'             => $asiste,
 			'num_acompanantes'   => $num_acompanantes,
 			'acompanantes'       => wp_json_encode( $acompanantes ),
@@ -105,9 +129,9 @@ class RSVP_Boda_Ajax {
 		// Se mira antes de guardar si ya había respuesta, para avisar de "cambio" y no de "nueva".
 		$es_cambio = $slug
 			? null !== RSVP_Boda_DB::obtener_respuesta_por_slug( $slug )
-			: null !== $this->respuesta_desde_cookie_edicion();
+			: null !== $respuesta_cookie;
 
-		$id = $slug ? $this->guardar_con_slug( $slug, $datos ) : $this->guardar_sin_slug( $datos );
+		$id = $slug ? $this->guardar_con_slug( $slug, $datos ) : $this->guardar_sin_slug( $datos, $respuesta_cookie );
 
 		if ( false === $id ) {
 			RSVP_Boda_Logger::error( 'guardar_respuesta', 'Fallo al guardar en base de datos', array( 'nombre' => $nombre_completo ) );
@@ -120,7 +144,7 @@ class RSVP_Boda_Ajax {
 		}
 
 		$respuesta_guardada = RSVP_Boda_DB::obtener_respuesta_por_id( $id );
-		$this->enviar_correos( $id, $respuesta_guardada, $es_cambio );
+		$this->enviar_correos( $id, $respuesta_guardada, $es_cambio, $this->url_para_volver( $slug, $clave_acceso ) );
 
 		wp_send_json_success(
 			array(
@@ -137,9 +161,16 @@ class RSVP_Boda_Ajax {
 	 * Recalcula el número de acompañantes a partir de los nombres realmente enviados,
 	 * sin confiar nunca en un contador declarado por el cliente, y respetando el permiso
 	 * de acompañante resuelto en servidor.
+	 *
+	 * Devuelve array( num, nombres ) o, si llegan acompañantes que no se pueden guardar (sin
+	 * permiso o por encima del límite), un string con el error para el invitado: antes se
+	 * descartaban en silencio y el invitado creía que venían.
+	 *
+	 * @return array|string
 	 */
-	private function procesar_acompanantes( string $asiste, bool $permite_acompanantes ): array {
-		if ( 'si' !== $asiste || ! $permite_acompanantes ) {
+	private function procesar_acompanantes( string $asiste, bool $permite_acompanantes ) {
+		if ( 'si' !== $asiste ) {
+			// Si no viene, no hay acompañantes que guardar (el JS ya quita esos campos al marcar "No").
 			return array( 0, array() );
 		}
 
@@ -148,17 +179,30 @@ class RSVP_Boda_Ajax {
 			return array( 0, array() );
 		}
 
-		$limite  = max( 0, (int) rsvp_boda_get_option( 'limite_acompanantes', 6 ) );
 		$limpios = array();
-
 		foreach ( $nombres_recibidos as $nombre_acompanante ) {
-			if ( count( $limpios ) >= $limite ) {
-				break;
-			}
-			$nombre_acompanante = sanitize_text_field( wp_unslash( (string) $nombre_acompanante ) );
+			$nombre_acompanante = rsvp_boda_recortar( sanitize_text_field( wp_unslash( (string) $nombre_acompanante ) ), 191 );
 			if ( '' !== $nombre_acompanante ) {
 				$limpios[] = $nombre_acompanante;
 			}
+		}
+
+		if ( ! $limpios ) {
+			return array( 0, array() );
+		}
+
+		$telefono_contacto = (string) rsvp_boda_get_option( 'telefono_contacto', '' );
+		$contacto          = '' !== $telefono_contacto ? ' Escríbenos o llámanos al ' . $telefono_contacto . ', por favor.' : ' Escríbenos, por favor.';
+
+		if ( ! $permite_acompanantes ) {
+			return 'Con este enlace no se pueden añadir acompañantes, así que no hemos guardado tu respuesta. Si vienes con alguien más, avísanos.' . $contacto;
+		}
+
+		$limite = max( 0, (int) rsvp_boda_get_option( 'limite_acompanantes', 6 ) );
+		if ( count( $limpios ) > $limite ) {
+			return 0 === $limite
+				? 'Ahora mismo no se pueden añadir acompañantes, así que no hemos guardado tu respuesta.' . $contacto
+				: 'Como máximo puedes añadir ' . ( 1 === $limite ? 'un acompañante' : $limite . ' acompañantes' ) . '. Revisa la lista y vuelve a enviar.';
 		}
 
 		return array( count( $limpios ), $limpios );
@@ -171,10 +215,10 @@ class RSVP_Boda_Ajax {
 	/**
 	 * Invitados sin enlace personalizado: se identifican por una cookie firmada puesta tras
 	 * su primer envío, para que puedan volver a editar su respuesta sin crear un duplicado.
+	 * $existente es la respuesta de la cookie, o null si no hay o si se pidió una respuesta nueva
+	 * (en ese caso se inserta otra fila y la cookie pasa a apuntar a ella).
 	 */
-	private function guardar_sin_slug( array $datos ) {
-		$existente = $this->respuesta_desde_cookie_edicion();
-
+	private function guardar_sin_slug( array $datos, ?array $existente ) {
 		if ( $existente ) {
 			$id_existente = (int) $existente['id'];
 			$ok = RSVP_Boda_DB::actualizar_respuesta_por_id( $id_existente, $datos );
@@ -220,6 +264,21 @@ class RSVP_Boda_Ajax {
 		return hash_hmac( 'sha256', (string) $id, wp_salt( 'auth' ) );
 	}
 
+	/**
+	 * Enlace que se pone en el correo al invitado para volver a editar: el personal si vino por
+	 * ?i=slug, el general con +1 si vino por ?c, y si no la web a secas (la cookie hace el resto).
+	 */
+	private function url_para_volver( string $slug, string $clave_acceso ): string {
+		$url = rsvp_boda_get_landing_url();
+		if ( '' !== $slug ) {
+			return add_query_arg( 'i', rawurlencode( $slug ), $url );
+		}
+		if ( '' !== $clave_acceso ) {
+			return add_query_arg( 'c', rawurlencode( $clave_acceso ), $url );
+		}
+		return $url;
+	}
+
 	private function obtener_ip(): string {
 		return sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' ) );
 	}
@@ -228,7 +287,7 @@ class RSVP_Boda_Ajax {
 	 * Dispara los correos de aviso. Nunca condiciona el resultado ya devuelto al usuario:
 	 * el guardado en base de datos ya se ha completado antes de llegar aquí.
 	 */
-	private function enviar_correos( int $id, ?array $respuesta, bool $es_cambio ): void {
+	private function enviar_correos( int $id, ?array $respuesta, bool $es_cambio, string $url_volver ): void {
 		if ( ! $respuesta ) {
 			return;
 		}
@@ -238,7 +297,7 @@ class RSVP_Boda_Ajax {
 		// Sin email del invitado (es opcional) no hay nada que enviarle: eso no es un fallo,
 		// antes se marcaba como "Fallo de envío" en el panel a todo el que no lo rellenaba.
 		$tiene_email = ! empty( $respuesta['email'] ) && is_email( $respuesta['email'] );
-		$ok_invitado = $tiene_email ? RSVP_Boda_Email::enviar_confirmacion_invitado( $respuesta, $es_cambio ) : true;
+		$ok_invitado = $tiene_email ? RSVP_Boda_Email::enviar_confirmacion_invitado( $respuesta, $es_cambio, $url_volver ) : true;
 		$actualizacion['email_enviado'] = $tiene_email && $ok_invitado ? 1 : 0;
 
 		$ok_admin = RSVP_Boda_Email::enviar_aviso_pareja( $respuesta, $es_cambio );

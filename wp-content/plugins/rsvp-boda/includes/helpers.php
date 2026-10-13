@@ -84,6 +84,28 @@ function rsvp_boda_get_option( string $clave, $default = '' ) {
 }
 
 /**
+ * Convierte una fecha guardada como "2027-02-13" (campo date de los ajustes) en "13 de febrero de 2027".
+ * Los meses van a mano para no depender del idioma configurado en WordPress. Si la fecha no tiene
+ * ese formato se devuelve tal cual, para no romper nada.
+ */
+function rsvp_boda_fecha_legible( string $fecha ): string {
+	$fecha = trim( $fecha );
+	if ( ! preg_match( '/^(\d{4})-(\d{2})-(\d{2})$/', $fecha, $m ) ) {
+		return $fecha;
+	}
+
+	$meses = array( 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre' );
+	$mes   = (int) $m[2];
+
+	// checkdate() descarta también días imposibles como "2027-02-31", no solo meses fuera de rango.
+	if ( ! checkdate( $mes, (int) $m[3], (int) $m[1] ) ) {
+		return $fecha;
+	}
+
+	return (int) $m[3] . ' de ' . $meses[ $mes - 1 ] . ' de ' . $m[1];
+}
+
+/**
  * Normaliza un nombre para comparación de duplicados: minúsculas, sin acentos, espacios colapsados.
  * Dos invitados "María López" y "maria   lopez " deben normalizar igual.
  */
@@ -145,17 +167,26 @@ function rsvp_boda_generar_token(): string {
 function rsvp_boda_clave_enlace_mas_uno(): string {
 	$clave = (string) get_option( 'rsvp_boda_clave_mas_uno', '' );
 	if ( '' === $clave ) {
-		$clave = strtolower( wp_generate_password( 10, false ) );
+		$clave = rsvp_boda_generar_clave_mas_uno();
 		update_option( 'rsvp_boda_clave_mas_uno', $clave, false );
 	}
 	return $clave;
 }
 
 /**
+ * Clave aleatoria nueva para el enlace con +1 (solo minúsculas y números, así sobrevive intacta
+ * a sanitize_key()). La usan tanto la primera generación como el botón "Generar un enlace +1 nuevo".
+ */
+function rsvp_boda_generar_clave_mas_uno(): string {
+	return strtolower( wp_generate_password( 10, false ) );
+}
+
+/**
  * Indica si la clave recibida (de la URL o del formulario) es la del enlace general con +1.
+ * La recibida llega pasada por sanitize_key(), así que se compara contra la guardada saneada igual.
  */
 function rsvp_boda_es_clave_mas_uno( string $clave ): bool {
-	return '' !== $clave && hash_equals( rsvp_boda_clave_enlace_mas_uno(), $clave );
+	return '' !== $clave && hash_equals( sanitize_key( rsvp_boda_clave_enlace_mas_uno() ), $clave );
 }
 
 /**
@@ -164,6 +195,24 @@ function rsvp_boda_es_clave_mas_uno( string $clave ): bool {
  */
 function rsvp_boda_permite_acompanantes_sin_slug( string $clave ): bool {
 	return rsvp_boda_es_clave_mas_uno( $clave ) || '1' === rsvp_boda_get_option( 'permite_acompanantes_sin_enlace', '0' );
+}
+
+/**
+ * Quien ya respondió con acompañantes (p. ej. por el enlace ?c) y vuelve a editar desde la web
+ * a secas (reconocido por la cookie de edición) conserva el permiso de +1: si no, al reenviar
+ * perdería sus acompañantes sin enterarse. Mismo criterio al pintar el formulario y en el AJAX.
+ */
+function rsvp_boda_respuesta_conserva_acompanantes( ?array $respuesta ): bool {
+	return $respuesta && (int) ( $respuesta['num_acompanantes'] ?? 0 ) > 0;
+}
+
+/**
+ * Recorta un texto a la longitud de su columna VARCHAR (contando caracteres, no bytes) para que
+ * un valor larguísimo no haga fallar el INSERT en MySQL en modo estricto. WordPress trae su propio
+ * mb_substr() (wp-includes/compat.php) si el servidor no tiene mbstring.
+ */
+function rsvp_boda_recortar( string $texto, int $max ): string {
+	return mb_substr( $texto, 0, $max );
 }
 
 /**

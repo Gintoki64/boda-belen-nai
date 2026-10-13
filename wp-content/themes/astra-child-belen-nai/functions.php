@@ -76,6 +76,16 @@ function boda_theme_hay_vestimenta(): bool {
 }
 
 /**
+ * Fecha "13 de febrero de 2027" usando la función del plugin si existe. Con function_exists para
+ * que subir el theme antes que el plugin no tumbe la portada (el 500 del 2026-10-08): en ese caso
+ * se muestra la fecha tal cual está guardada.
+ */
+function boda_theme_fecha_legible( $fecha ): string {
+	$fecha = (string) $fecha;
+	return function_exists( 'rsvp_boda_fecha_legible' ) ? rsvp_boda_fecha_legible( $fecha ) : $fecha;
+}
+
+/**
  * Adelanta la conexión a los dominios de Adobe Fonts antes de que el navegador llegue a la
  * hoja de estilos que los pide, para no perder tiempo de DNS/TLS en el camino crítico.
  */
