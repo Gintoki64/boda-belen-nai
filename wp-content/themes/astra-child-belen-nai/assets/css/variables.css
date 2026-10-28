@@ -10,7 +10,10 @@
 	--boda-blanco-cal: #faf7f2;
 	--boda-terracota: #c1592f;
 
-	--boda-color-texto: var(--boda-anil);
+	/* Texto en negro (prueba del 2026-10-27: el añil no se apreciaba sobre el fondo azul).
+	   Para volver al azul: var(--boda-anil) y var(--boda-anil-suave). */
+	--boda-color-texto: #1a1a1a;
+	--boda-color-texto-suave: #555;
 	--boda-color-fondo: var(--boda-blanco-cal);
 	--boda-color-acento: var(--boda-albero);
 	--boda-color-acento-2: var(--boda-terracota);
@@ -20,5 +23,5 @@
 	--boda-fuente-cuerpo: 'the-seasons', Georgia, 'Times New Roman', serif;
 
 	--boda-radio: 10px;
-	--boda-espaciado-seccion: clamp(3rem, 8vw, 6rem);
+	--boda-espaciado-seccion: clamp(0.9rem, 2.5vw, 1.5rem);
 }

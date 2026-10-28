@@ -373,3 +373,34 @@ Ordenado por importancia: primero lo que cuesta dinero, luego datos personales, 
 - `rsvp-boda.zip` y `astra-child-belen-nai.zip` en `wp-content/plugins/` y `wp-content/themes/`
   respectivamente: zips listos para subir vía el uploader de WordPress si hace falta volver a
   desplegar.
+
+## Cambio del 2026-10-27 (subido por FTPS y verificado en producción con Chrome)
+
+- **Fondo nuevo "olivo y clavel"** (`Desktop\proyectos\fondoOlivoClavel.png`, 2480×1628) sustituye a
+  `fondo-boda-pattern.jpg` (que se queda en el servidor sin uso). Ya **no se repite**: va una
+  sola vez en `body::before` (`position: fixed; inset: 0; z-index: -1; background-size: cover`),
+  así no hay costuras y el fondo queda fijo también en móvil sin los tirones de
+  `background-attachment: fixed`. Dos tamaños: `fondo-olivo-clavel-movil.jpg` (1400px, ~230 KB)
+  por defecto y `fondo-olivo-clavel.jpg` (2200px, ~450 KB) desde 782px.
+- **Velo bajado a 25%** (antes 40%) para que se vea el azul de la acuarela; el texto se lee por
+  las tarjetas.
+- **Portada**: el degradado dorado (sobre el azul quedaba verdoso) se cambió por un halo crema
+  radial detrás de nombres/fecha (`.boda-seccion--portada`).
+- **FTPS con verificación TLS**: el certificado del FTP de Hostinger es `*.hstgr.io`, no la IP.
+  Conectar con `curl --ssl-reqd --connect-to "ftp.hstgr.io:21:<IP>:21"` y URL
+  `ftp://ftp.hstgr.io/...` (netrc con `machine ftp.hstgr.io`) — sin `-k`.
+- **Botones y espaciado** (mismo día, subido y verificado): `.boda-boton` y el botón de enviar
+  del RSVP (`.rsvp-boda-form .rsvp-boda-boton-enviar`, vestido desde el theme, no desde el plugin)
+  pasan a añil con filete dorado interior (`box-shadow` inset), versalitas espaciadas y radio 3px;
+  el secundario ("Copiar IBAN") solo contorno. Campos del formulario con borde añil suave y
+  `accent-color` añil. Aviso "Ya habías confirmado…"/plazo cerrado: blanco con filete dorado a la
+  izquierda en vez de amarillo. `--boda-espaciado-seccion` bajado a `clamp(0.9rem, 2.5vw, 1.5rem)`
+  (tarjetas más juntas) y `.boda-seccion__titulo` subido a `clamp(2.4rem, 7vw, 3.4rem)`.
+- **Tercera tanda** (mismo día, subida y verificada): en móvil el fondo es la ilustración
+  **girada 90°** (`fondo-olivo-clavel-movil-vertical.jpg`, 1200×1828) — con la apaisada, `cover`
+  en pantalla alta dejaba las flores enormes. Se probó apilarla con su reflejo y se descartó (la
+  unión en espejo se notaba). `fondo-olivo-clavel-movil.jpg` queda sin uso. **Texto en negro
+  (`#1a1a1a`) como prueba** del usuario: `--boda-color-texto` / `--boda-color-texto-suave` en
+  `variables.css` (volver al azul = `var(--boda-anil)` / `var(--boda-anil-suave)`); botones siguen
+  añil. Halo crema de la portada reforzado (0.92 centro / 0.6 a mitad).
+- **El usuario autoriza subir a producción cada cambio que pida** (2026-10-27), sin preguntar.
