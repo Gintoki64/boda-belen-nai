@@ -421,3 +421,12 @@
 		color: #444;
 	}
 }
+
+/* Alergias de cada acompañante en la columna "Acompañantes" de Confirmaciones. */
+.rsvp-boda-acompanante-alergias {
+	color: #b32d2e;
+}
+
+.rsvp-boda-acompanante-relacion {
+	color: #646970;
+}

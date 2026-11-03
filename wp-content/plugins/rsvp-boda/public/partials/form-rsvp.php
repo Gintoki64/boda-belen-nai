@@ -10,9 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $nombre_valor    = $respuesta_previa['nombre_completo'] ?? $nombre_prefijado;
 $asiste_valor    = $respuesta_previa['asiste'] ?? '';
-$acompanantes_previos = $respuesta_previa ? (array) json_decode( (string) $respuesta_previa['acompanantes'], true ) : array();
+$acompanantes_previos = $respuesta_previa ? rsvp_boda_decodificar_acompanantes( $respuesta_previa['acompanantes'] ) : array();
 $alergias_valor  = $respuesta_previa['alergias'] ?? '';
-$menu_inf_valor  = $respuesta_previa['menu_infantil'] ?? 'no';
 $bus_valor       = $respuesta_previa['necesita_bus'] ?? 'no';
 $parada_valor    = $respuesta_previa['parada_bus'] ?? '';
 $cancion_valor   = $respuesta_previa['cancion'] ?? '';
@@ -70,15 +69,10 @@ $email_valor     = $respuesta_previa['email'] ?? '';
 		</div>
 
 		<p class="rsvp-boda-campo">
-			<label for="rsvp-alergias">Alergias, intolerancias o menú especial</label>
+			<label for="rsvp-alergias">Tus alergias, intolerancias o menú especial</label>
 			<textarea id="rsvp-alergias" name="alergias" rows="3"><?php echo esc_textarea( $alergias_valor ); ?></textarea>
 		</p>
 
-		<fieldset class="rsvp-boda-campo">
-			<legend>¿Necesitáis menú infantil?</legend>
-			<label><input type="radio" name="menu_infantil" value="si" <?php checked( 'si', $menu_inf_valor ); ?> /> Sí</label>
-			<label><input type="radio" name="menu_infantil" value="no" <?php checked( 'no', $menu_inf_valor ); ?> /> No</label>
-		</fieldset>
 
 		<?php if ( '1' === rsvp_boda_get_option( 'bus_activado', '0' ) ) : ?>
 			<fieldset class="rsvp-boda-campo">

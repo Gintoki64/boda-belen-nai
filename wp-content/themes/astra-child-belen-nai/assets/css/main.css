@@ -68,7 +68,7 @@ img {
 	position: absolute;
 	top: -100px;
 	left: 0;
-	background: var(--boda-anil);
+	background: var(--boda-granate);
 	color: #fff;
 	padding: 0.75em 1.25em;
 	z-index: 1000;
@@ -112,7 +112,7 @@ img {
 .boda-menu-toggle__barra {
 	width: 24px;
 	height: 2px;
-	background: var(--boda-anil);
+	background: var(--boda-granate);
 	display: block;
 }
 
@@ -142,7 +142,7 @@ img {
 
 .boda-nav__destacado {
 	font-weight: 700;
-	color: var(--boda-terracota);
+	color: var(--boda-granate);
 }
 
 @media (min-width: 782px) {
@@ -169,7 +169,7 @@ img {
 	}
 
 	.boda-nav__destacado {
-		border-bottom: 1px solid var(--boda-terracota);
+		border-bottom: 1px solid var(--boda-granate);
 		padding-bottom: 2px;
 	}
 }
@@ -227,7 +227,7 @@ img {
 .boda-seccion__titulo {
 	font-size: clamp(2.4rem, 7vw, 3.4rem);
 	line-height: 1.15;
-	color: var(--boda-color-texto);
+	color: var(--boda-granate);
 	text-align: center;
 	margin: 0 0 0.5em;
 }
@@ -265,11 +265,11 @@ img {
 
 .boda-portada__nombres {
 	font-size: clamp(2.4rem, 10vw, 4.5rem);
-	color: var(--boda-color-texto);
+	color: var(--boda-granate);
 }
 
 .boda-portada__y {
-	color: var(--boda-terracota);
+	color: #b0822f; /* dorado algo más oscuro que el albero, para que se lea sobre el halo crema */
 	padding: 0 0.2em;
 }
 
@@ -309,7 +309,7 @@ img {
 	display: block;
 	font-size: 1.5rem;
 	font-weight: 700;
-	color: var(--boda-terracota);
+	color: var(--boda-granate);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -320,7 +320,7 @@ img {
 	color: var(--boda-color-texto-suave);
 }
 
-/* Botones como una tarjeta de invitación: añil (el mismo azul del fondo, más profundo) con un
+/* Botones como una tarjeta de invitación: granate (el de las letras de la invitación en papel) con un
    filete dorado por dentro, versalitas espaciadas y esquinas apenas redondeadas. El botón de
    enviar del RSVP lo pinta el plugin pero se viste aquí, para que todo hable el mismo idioma;
    las dos clases en cada selector son para ganar a los `button:hover` de Astra. */
@@ -328,7 +328,7 @@ img {
 .boda-boton:visited,
 .rsvp-boda-form .rsvp-boda-boton-enviar {
 	display: inline-block;
-	background: var(--boda-anil);
+	background: var(--boda-granate);
 	color: var(--boda-blanco-cal);
 	border: none;
 	border-radius: 3px;
@@ -341,7 +341,7 @@ img {
 	text-transform: uppercase;
 	text-decoration: none;
 	cursor: pointer;
-	box-shadow: inset 0 0 0 4px var(--boda-anil), inset 0 0 0 5px rgba(217, 164, 65, 0.85),
+	box-shadow: inset 0 0 0 4px var(--boda-granate), inset 0 0 0 5px rgba(217, 164, 65, 0.85),
 		0 12px 24px -14px rgba(31, 58, 110, 0.7);
 	transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
@@ -350,9 +350,9 @@ img {
 .boda-boton:focus,
 .rsvp-boda-form .rsvp-boda-boton-enviar:hover,
 .rsvp-boda-form .rsvp-boda-boton-enviar:focus {
-	background: #2a4b86;
+	background: var(--boda-granate-claro);
 	color: var(--boda-blanco-cal);
-	box-shadow: inset 0 0 0 4px #2a4b86, inset 0 0 0 5px var(--boda-albero),
+	box-shadow: inset 0 0 0 4px var(--boda-granate-claro), inset 0 0 0 5px var(--boda-albero),
 		0 16px 28px -14px rgba(31, 58, 110, 0.75);
 	transform: translateY(-1px);
 }
@@ -372,26 +372,26 @@ img {
 /* Secundario (p. ej. "Copiar IBAN"): solo el contorno, se rellena al pasar por encima. */
 .boda-boton.boda-boton--secundario {
 	background: transparent;
-	color: var(--boda-anil);
+	color: var(--boda-granate);
 	padding: 0.8em 1.9em;
-	box-shadow: inset 0 0 0 1px var(--boda-anil);
+	box-shadow: inset 0 0 0 1px var(--boda-granate);
 }
 
 .boda-boton.boda-boton--secundario:hover,
 .boda-boton.boda-boton--secundario:focus {
-	background: var(--boda-anil);
+	background: var(--boda-granate);
 	color: var(--boda-blanco-cal);
-	box-shadow: inset 0 0 0 1px var(--boda-anil), inset 0 0 0 4px var(--boda-anil),
+	box-shadow: inset 0 0 0 1px var(--boda-granate), inset 0 0 0 4px var(--boda-granate),
 		inset 0 0 0 5px rgba(217, 164, 65, 0.85);
 }
 
-/* Campos del formulario a juego: borde añil suave y radios/checks en añil. */
+/* Campos del formulario a juego: borde granate suave y radios/checks en granate. */
 .rsvp-boda-form input[type="text"],
 .rsvp-boda-form input[type="tel"],
 .rsvp-boda-form input[type="email"],
 .rsvp-boda-form select,
 .rsvp-boda-form textarea {
-	border: 1px solid rgba(31, 58, 110, 0.3);
+	border: 1px solid rgba(117, 42, 34, 0.3);
 	border-radius: 3px;
 	background: #fff;
 	color: var(--boda-color-texto);
@@ -400,7 +400,7 @@ img {
 
 .rsvp-boda-form input[type="radio"],
 .rsvp-boda-form input[type="checkbox"] {
-	accent-color: var(--boda-anil);
+	accent-color: var(--boda-granate);
 }
 
 .rsvp-boda-form .rsvp-boda-boton-enviar {
@@ -423,9 +423,9 @@ img {
 .rsvp-boda-form-wrap .rsvp-boda-aviso-previo .rsvp-boda-nueva-respuesta,
 .rsvp-boda-form-wrap .rsvp-boda-aviso-previo .rsvp-boda-nueva-respuesta:hover,
 .rsvp-boda-form-wrap .rsvp-boda-aviso-previo .rsvp-boda-nueva-respuesta:focus {
-	color: var(--boda-terracota);
+	color: var(--boda-granate);
 	font-weight: 400;
-	text-decoration-color: rgba(193, 89, 47, 0.4);
+	text-decoration-color: rgba(117, 42, 34, 0.4);
 	text-underline-offset: 3px;
 }
 
@@ -470,7 +470,7 @@ img {
 	font-weight: 400;
 	text-transform: uppercase;
 	letter-spacing: 0.12em;
-	color: var(--boda-terracota);
+	color: var(--boda-granate);
 	margin: 0 0 0.3em;
 }
 
@@ -533,4 +533,78 @@ img {
 	padding: 2em 1em;
 	font-size: 0.9rem;
 	color: var(--boda-color-texto);
+}
+
+/* Cada acompañante (nombre + sus alergias) agrupado con un filete dorado a la izquierda. */
+.rsvp-boda-acompanante {
+	border-left: 2px solid rgba(217, 164, 65, 0.6);
+	padding-left: 0.9em;
+	margin: 1em 0;
+}
+
+.rsvp-boda-acompanante .rsvp-boda-campo {
+	margin-bottom: 0.6em;
+}
+
+/* Pantalla de "¡Confirmación enviada!" que sustituye al formulario tras un envío correcto. */
+.rsvp-boda-enviada {
+	text-align: center;
+	padding: 1.5em 0.5em 0.5em;
+	animation: boda-aparecer 0.45s ease-out;
+}
+
+.rsvp-boda-enviada:focus {
+	outline: none;
+}
+
+.rsvp-boda-enviada__icono {
+	width: 64px;
+	height: 64px;
+	margin: 0 auto 0.9em;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.9rem;
+	color: var(--boda-blanco-cal);
+	background: var(--boda-granate);
+	box-shadow: inset 0 0 0 4px var(--boda-granate), inset 0 0 0 5px rgba(217, 164, 65, 0.85),
+		0 12px 24px -12px rgba(117, 42, 34, 0.6);
+}
+
+.rsvp-boda-enviada__titulo {
+	font-family: var(--boda-fuente-titulares);
+	font-size: clamp(2rem, 6vw, 2.6rem);
+	line-height: 1.2;
+	color: var(--boda-granate);
+	margin: 0 0 0.4em;
+}
+
+.rsvp-boda-enviada__mensaje {
+	font-size: 1.1rem;
+	margin: 0 0 0.6em;
+}
+
+.rsvp-boda-enviada__nota {
+	color: var(--boda-color-texto-suave);
+	font-size: 0.95rem;
+	max-width: 30em;
+	margin: 0 auto 1.6em;
+}
+
+@keyframes boda-aparecer {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.rsvp-boda-enviada {
+		animation: none;
+	}
 }

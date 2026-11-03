@@ -124,7 +124,7 @@
 		var $insignias = $( '<span class="rsvp-boda-mesas-persona__insignias"></span>' );
 		if ( persona.menu_infantil ) {
 			$( '<span class="rsvp-boda-mesas-insignia rsvp-boda-mesas-insignia--infantil">Infantil</span>' )
-				.attr( 'title', 'En esta confirmación han pedido menú infantil' )
+				.attr( 'title', 'Menú infantil' )
 				.appendTo( $insignias );
 		}
 		if ( persona.alergias ) {
@@ -143,7 +143,7 @@
 
 		var detalles = [];
 		if ( 'acompanante' === persona.tipo && persona.de ) {
-			detalles.push( 'acompañante de ' + persona.de );
+			detalles.push( ( persona.relacion || 'acompañante' ) + ' de ' + persona.de );
 		}
 		if ( persona.grupo ) {
 			detalles.push( persona.grupo );
@@ -540,7 +540,7 @@
 	function lineaImpresion( persona ) {
 		var extras = [];
 		if ( 'acompanante' === persona.tipo && persona.de ) {
-			extras.push( 'acompañante de ' + persona.de );
+			extras.push( ( persona.relacion || 'acompañante' ) + ' de ' + persona.de );
 		}
 		if ( persona.nota ) {
 			extras.push( persona.nota );

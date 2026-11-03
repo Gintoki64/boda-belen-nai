@@ -126,6 +126,39 @@ class RSVP_Boda_List_Table extends WP_List_Table {
 		return sprintf( '<span class="rsvp-boda-badge %s">%s</span>', esc_attr( $clase ), esc_html( $texto ) );
 	}
 
+	/**
+	 * Número de acompañantes y, debajo, cada uno con su nombre y sus alergias (si las indicó).
+	 */
+	public function column_num_acompanantes( array $item ): string {
+		$num = (int) $item['num_acompanantes'];
+		if ( 0 === $num ) {
+			return '&mdash;';
+		}
+
+		$lineas = array();
+		foreach ( rsvp_boda_decodificar_acompanantes( $item['acompanantes'] ) as $acompanante ) {
+			$linea = esc_html( $acompanante['nombre'] );
+			$relacion = rsvp_boda_relacion_texto( $acompanante['relacion'] );
+			if ( '' !== $relacion ) {
+				$linea .= ' <span class="rsvp-boda-acompanante-relacion">(' . esc_html( mb_strtolower( $relacion ) ) . ')</span>';
+			}
+			if ( $acompanante['menu_infantil'] ) {
+				$linea .= ' <span class="rsvp-boda-badge">menú infantil</span>';
+			}
+			if ( '' !== $acompanante['alergias'] ) {
+				$linea .= ' <span class="rsvp-boda-acompanante-alergias">&mdash; ' . esc_html( $acompanante['alergias'] ) . '</span>';
+			}
+			$lineas[] = $linea;
+		}
+
+		return '<strong>' . $num . '</strong>' . ( $lineas ? '<br>' . implode( '<br>', $lineas ) : '' );
+	}
+
+	public function column_menu_infantil( array $item ): string {
+		$texto = rsvp_boda_menu_infantil_texto( $item );
+		return 'No' === $texto ? '&mdash;' : esc_html( $texto );
+	}
+
 	public function column_alergias( array $item ): string {
 		$texto = trim( (string) $item['alergias'] );
 		if ( '' === $texto ) {
@@ -199,7 +232,8 @@ class RSVP_Boda_List_Table extends WP_List_Table {
 		$params = array();
 
 		if ( 'alergias' === $vista ) {
-			$where[] = "alergias IS NOT NULL AND alergias != ''";
+			// También las respuestas en las que solo algún acompañante tiene alergias (JSON de `acompanantes`).
+			$where[] = "((alergias IS NOT NULL AND alergias != '') OR acompanantes REGEXP '\"alergias\":\"[^\"]')";
 		} elseif ( 'canciones' === $vista ) {
 			$where[] = "cancion IS NOT NULL AND cancion != ''";
 		} elseif ( 'duplicados' === $vista ) {

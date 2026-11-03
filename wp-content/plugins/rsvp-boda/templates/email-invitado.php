@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$acompanantes = (array) json_decode( (string) $respuesta['acompanantes'], true );
+$acompanantes = rsvp_boda_decodificar_acompanantes( $respuesta['acompanantes'] );
 ?>
 <div style="font-family: Georgia, 'Times New Roman', serif; color: #1f3a6e; max-width: 480px; margin: 0 auto;">
 	<h2 style="color:#1f3a6e;">
@@ -22,7 +22,7 @@ $acompanantes = (array) json_decode( (string) $respuesta['acompanantes'], true )
 	<?php endif; ?>
 
 	<?php if ( 'si' === $respuesta['asiste'] ) : ?>
-		<p>¡Genial! Hemos apuntado que <strong>vienes</strong> a la boda<?php echo $respuesta['num_acompanantes'] > 0 ? ' junto a ' . esc_html( implode( ', ', $acompanantes ) ) : ''; ?>.</p>
+		<p>¡Genial! Hemos apuntado que <strong>vienes</strong> a la boda<?php echo $respuesta['num_acompanantes'] > 0 ? ' junto a ' . esc_html( implode( ', ', array_column( $acompanantes, 'nombre' ) ) ) : ''; ?>.</p>
 	<?php else : ?>
 		<p>Hemos apuntado que <strong>no podrás venir</strong>. ¡Te echaremos de menos!</p>
 	<?php endif; ?>

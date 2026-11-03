@@ -9,11 +9,14 @@
 	--boda-anil-suave: #5c6f92;
 	--boda-blanco-cal: #faf7f2;
 	--boda-terracota: #c1592f;
+	/* Color de las letras de la invitación en papel: rgb(117, 42, 34). */
+	--boda-granate: #752a22;
+	--boda-granate-claro: #8e3a2f;
 
-	/* Texto en negro (prueba del 2026-10-27: el añil no se apreciaba sobre el fondo azul).
-	   Para volver al azul: var(--boda-anil) y var(--boda-anil-suave). */
-	--boda-color-texto: #1a1a1a;
-	--boda-color-texto-suave: #555;
+	/* Texto corrido en un marrón muy oscuro de la gama del granate (más legible que el granate puro
+	   en párrafos largos); títulos, nombres, cifras y botones van en el granate exacto. */
+	--boda-color-texto: #3d2622;
+	--boda-color-texto-suave: #7a5c56;
 	--boda-color-fondo: var(--boda-blanco-cal);
 	--boda-color-acento: var(--boda-albero);
 	--boda-color-acento-2: var(--boda-terracota);

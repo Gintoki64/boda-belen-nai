@@ -15,3 +15,8 @@ wp-config.php
 Thumbs.db
 .DS_Store
 *.csv
+
+# Listas de invitados y presupuestos: datos personales, el repo es público
+*.xlsx
+*.xls
+~$*

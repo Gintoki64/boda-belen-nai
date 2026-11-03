@@ -103,28 +103,38 @@ class RSVP_Boda_Admin {
 		);
 
 		foreach ( $filas as $fila ) {
-			$acompanantes = implode( ', ', (array) json_decode( (string) $fila['acompanantes'], true ) );
+			$acompanantes = rsvp_boda_acompanantes_texto( rsvp_boda_decodificar_acompanantes( $fila['acompanantes'] ) );
 			fputcsv(
 				$salida,
-				array(
+				array_map( array( $this, 'neutralizar_formula_csv' ), array(
 					$fila['nombre_completo'],
 					'si' === $fila['asiste'] ? 'Sí' : 'No',
 					$fila['num_acompanantes'],
 					$acompanantes,
 					$fila['alergias'],
-					'si' === $fila['menu_infantil'] ? 'Sí' : 'No',
+					rsvp_boda_menu_infantil_texto( $fila ),
 					'si' === $fila['necesita_bus'] ? 'Sí' : 'No',
 					$fila['parada_bus'],
 					$fila['cancion'],
 					$fila['telefono'],
 					$fila['email'],
 					$fila['creado_en'],
-				),
+				) ),
 				';'
 			);
 		}
 
 		fclose( $salida );
 		exit;
+	}
+
+	/**
+	 * Un valor que empiece por = + - @ (o tabulador/retorno) Excel lo ejecuta como fórmula al abrir
+	 * el CSV: alguien podría escribir una en su nombre o en la canción. Con una comilla delante se
+	 * queda como texto.
+	 */
+	private function neutralizar_formula_csv( $valor ): string {
+		$valor = (string) $valor;
+		return ( '' !== $valor && false !== strpos( "=+-@\t\r", $valor[0] ) ) ? "'" . $valor : $valor;
 	}
 }

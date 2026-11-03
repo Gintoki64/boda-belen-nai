@@ -91,7 +91,10 @@ class RSVP_Boda_Mesas {
 			$titular  = (string) $fila['nombre_completo'];
 			$grupo    = (string) ( $fila['grupo'] ?? '' );
 			$alergias = trim( (string) ( $fila['alergias'] ?? '' ) );
-			$infantil = 'si' === $fila['menu_infantil'];
+			$acompanantes = rsvp_boda_decodificar_acompanantes( $fila['acompanantes'] );
+			// Respuestas antiguas: el menú infantil iba por respuesta y se mostraba en el titular.
+			// Las nuevas lo llevan en cada acompañante (null = formato antiguo).
+			$infantil = 'si' === $fila['menu_infantil'] && ! array_filter( array_column( $acompanantes, 'menu_infantil' ), 'is_bool' );
 
 			$personas[] = array(
 				'clave'         => 'r' . $id . '-0',
@@ -104,26 +107,24 @@ class RSVP_Boda_Mesas {
 				'alergias'      => $alergias,
 			);
 
-			$nombres = json_decode( (string) $fila['acompanantes'], true );
-			$nombres = is_array( $nombres ) ? array_values( $nombres ) : array();
-			$total   = max( count( $nombres ), (int) $fila['num_acompanantes'] );
+			$total = max( count( $acompanantes ), (int) $fila['num_acompanantes'] );
 
 			for ( $n = 1; $n <= $total; $n++ ) {
-				$nombre = isset( $nombres[ $n - 1 ] ) && is_scalar( $nombres[ $n - 1 ] ) ? trim( (string) $nombres[ $n - 1 ] ) : '';
+				$nombre = $acompanantes[ $n - 1 ]['nombre'] ?? '';
 				if ( '' === $nombre ) {
 					$nombre = 'Acompañante ' . $n;
 				}
-				// El menú infantil y las alergias se recogen por respuesta, no por persona:
-				// solo se muestran en el titular para no dar a entender que aplican a todos.
+				// Alergias y menú infantil de cada acompañante (vacíos en respuestas antiguas).
 				$personas[] = array(
 					'clave'         => 'r' . $id . '-' . $n,
 					'nombre'        => $nombre,
 					'tipo'          => 'acompanante',
 					'de'            => $titular,
+					'relacion'      => mb_strtolower( rsvp_boda_relacion_texto( $acompanantes[ $n - 1 ]['relacion'] ?? '' ) ),
 					'grupo'         => $grupo,
 					'nota'          => '',
-					'menu_infantil' => false,
-					'alergias'      => '',
+					'menu_infantil' => (bool) ( $acompanantes[ $n - 1 ]['menu_infantil'] ?? false ),
+					'alergias'      => $acompanantes[ $n - 1 ]['alergias'] ?? '',
 				);
 			}
 		}

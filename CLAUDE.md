@@ -404,3 +404,50 @@ Ordenado por importancia: primero lo que cuesta dinero, luego datos personales, 
   `variables.css` (volver al azul = `var(--boda-anil)` / `var(--boda-anil-suave)`); botones siguen
   añil. Halo crema de la portada reforzado (0.92 centro / 0.6 a mitad).
 - **El usuario autoriza subir a producción cada cambio que pida** (2026-10-27), sin preguntar.
+
+## Cambios del 2026-10-28: alergias por acompañante + revisión de seguridad (subidos y verificados)
+
+- **Alergias por acompañante**: la columna `acompanantes` (JSON) pasa de lista de nombres a lista
+  de `{"nombre","alergias"}`. Leer SIEMPRE con `rsvp_boda_decodificar_acompanantes()` (helpers.php),
+  que acepta también el formato antiguo (strings), y pintar con `rsvp_boda_acompanantes_texto()`.
+  El formulario envía `acompanantes[]` y `acompanantes_alergias[]` en paralelo; el campo general
+  pasa a "Tus alergias…" (del titular). Confirmaciones muestra en "Acompañantes" el número y debajo
+  cada nombre con sus alergias en rojo; la vista "Con alergias" incluye las de acompañantes
+  (REGEXP sobre el JSON); CSV, correo a la pareja y Mesas también las llevan.
+- **Seguridad** (informe de otra IA reenviado por el usuario):
+  - Log público `uploads/rsvp-boda-errores.log` (respondía 206 desde internet): el logger ya solo
+    usa `error_log()`; el fichero se **movió** (no borrado) a `domains/bodabelennai.es/
+    rsvp-boda-errores-NO-PUBLICO.log`, fuera de `public_html` — que el usuario lo borre desde
+    el Administrador de archivos cuando quiera.
+  - Límite de envíos: `MAX_ENVIOS_POR_HORA = 15` por huella de IP (transient) en el AJAX.
+  - Slugs personales con 6 caracteres aleatorios (`rsvp_boda_generar_slug_unico`). No había
+    ningún invitado con enlace personal, así que no hubo que regenerar nada.
+  - CSV: `neutralizar_formula_csv()` antepone `'` a valores que empiezan por = + - @ tab o CR.
+  - **Pendiente del usuario**: clave SMTP de Brevo a `wp-config.php` como `RSVP_BODA_SMTP_CLAVE`
+    y vaciar el campo; comprobar en hPanel la "Build Date" de PHP (≥ 21-10-2026), que no es VPS y
+    subir a PHP 8.3+ si está en 8.2 o anterior.
+  - El repo de GitHub se queda **público** por decisión del usuario (2026-10-28).
+- **Menú infantil solo por acompañante** (mismo día, subido y verificado): quitada la pregunta
+  general "¿Necesitáis menú infantil?" (el titular es adulto). Cada acompañante tiene la casilla
+  `acompanantes_infantil[]` con su posición como valor (las no marcadas no se envían). En el JSON,
+  `menu_infantil` true/false por acompañante (null = respuesta antigua). La columna
+  `menu_infantil` de la respuesta se calcula ("si" si algún acompañante lo lleva) para contadores
+  y filtros. Panel/CSV/correo: `rsvp_boda_menu_infantil_texto()` (nombres, o "Sí"/"No" en
+  antiguas). Mesas: en respuestas antiguas sigue marcando al titular.
+- **Relación de cada acompañante con quien rellena** (mismo día, subido y verificado): desplegable
+  obligatorio "Es tu…" (`acompanantes_relacion[]`: pareja, hijo, familiar, amigo, otro), validado en
+  servidor con `rsvp_boda_relaciones_acompanante()` (helpers.php; el JS repite la lista). Se ve en
+  Confirmaciones "(hijo/a)", CSV/correo y Mesas ("pareja de X" en vez de "acompañante de X").
+  Ojo: el usuario lo pidió como relación *con el titular*, no con la pareja de novios.
+- **Color de letras de la invitación en papel** (mismo día, subido y verificado): `--boda-granate:
+  #752a22` (= rgb 117,42,34, dato del usuario) para títulos, nombres de portada, cifras de la
+  cuenta atrás, etiquetas Ceremonia/Banquete, enlace destacado del menú, botones (con filete
+  dorado; hover `--boda-granate-claro: #8e3a2f`) y campos del formulario. Texto corrido en
+  `#3d2622` (marrón muy oscuro de la misma gama) y secundario `#7a5c56` — sustituyen a la prueba
+  en negro. El "&" de la portada en dorado `#b0822f`. Ya no se usan añil ni terracota en main.css.
+- **Pantalla "¡Confirmación enviada!"** (mismo día, subido y verificado simulando la respuesta del
+  servidor, sin envío real): tras un envío correcto `mostrarPantallaEnviada()` (rsvp-boda-form.js)
+  oculta el formulario y pinta `#rsvp-boda-enviada` (círculo granate con ✓, título, mensaje del
+  servidor, nota del correo si dejó email y botón "Modificar mi respuesta" que vuelve al formulario
+  con los datos). Estilos en main.css del theme (`.rsvp-boda-enviada*`). Los errores siguen
+  saliendo como antes en `#rsvp-boda-mensajes`.

@@ -127,6 +127,9 @@ function rsvp_boda_generar_slug_unico( string $nombre, int $excluir_id = 0 ): st
 	if ( '' === $base_slug ) {
 		$base_slug = 'invitado';
 	}
+	// Parte aleatoria: con solo el nombre, cualquiera que conociera a un invitado podía abrir su
+	// enlace (formulario precargado con teléfono, email y alergias) y cambiarle la respuesta.
+	$base_slug .= '-' . strtolower( wp_generate_password( 6, false ) );
 
 	$slug    = $base_slug;
 	$sufijo  = 2;
@@ -215,6 +218,90 @@ function rsvp_boda_respuesta_conserva_acompanantes( ?array $respuesta ): bool {
 function rsvp_boda_limite_acompanantes( ?array $respuesta = null ): int {
 	$limite = max( 0, (int) rsvp_boda_get_option( 'limite_acompanantes', 6 ) );
 	return $respuesta ? max( $limite, (int) ( $respuesta['num_acompanantes'] ?? 0 ) ) : $limite;
+}
+
+/**
+ * Lee la columna `acompanantes` (JSON) como lista de
+ * array( 'nombre' => …, 'relacion' => …, 'alergias' => …, 'menu_infantil' => bool|null ).
+ * Las respuestas guardadas antes de pedir estos datos por acompañante tienen solo nombres (strings):
+ * se devuelven con 'relacion' y 'alergias' vacíos y 'menu_infantil' null (el menú infantil iba por respuesta).
+ */
+function rsvp_boda_decodificar_acompanantes( ?string $json ): array {
+	$lista = json_decode( (string) $json, true );
+	if ( ! is_array( $lista ) ) {
+		return array();
+	}
+
+	$acompanantes = array();
+	foreach ( array_values( $lista ) as $item ) {
+		if ( is_array( $item ) ) {
+			$acompanantes[] = array(
+				'nombre'        => trim( (string) ( $item['nombre'] ?? '' ) ),
+				'relacion'      => trim( (string) ( $item['relacion'] ?? '' ) ),
+				'alergias'      => trim( (string) ( $item['alergias'] ?? '' ) ),
+				'menu_infantil' => array_key_exists( 'menu_infantil', $item ) ? (bool) $item['menu_infantil'] : null,
+			);
+		} elseif ( is_scalar( $item ) ) {
+			$acompanantes[] = array( 'nombre' => trim( (string) $item ), 'relacion' => '', 'alergias' => '', 'menu_infantil' => null );
+		}
+	}
+	return $acompanantes;
+}
+
+/**
+ * Relación de un acompañante con quien rellena el formulario: valor guardado => texto. El formulario
+ * (rsvp-boda-form.js) pinta las mismas opciones, y el servidor solo acepta estos valores.
+ */
+function rsvp_boda_relaciones_acompanante(): array {
+	return array(
+		'pareja'   => 'Pareja',
+		'hijo'     => 'Hijo/a',
+		'familiar' => 'Otro familiar',
+		'amigo'    => 'Amigo/a',
+		'otro'     => 'Otro',
+	);
+}
+
+/**
+ * Texto de la relación ("Hijo/a"), o '' si no se indicó (respuestas antiguas).
+ */
+function rsvp_boda_relacion_texto( string $relacion ): string {
+	return rsvp_boda_relaciones_acompanante()[ $relacion ] ?? '';
+}
+
+/**
+ * "Ana López (pareja; menú infantil; sin gluten), Luis Pérez": acompañantes en una línea, para el CSV y los correos.
+ */
+function rsvp_boda_acompanantes_texto( array $acompanantes ): string {
+	$partes = array();
+	foreach ( $acompanantes as $acompanante ) {
+		$extras   = array_filter(
+			array(
+				mb_strtolower( rsvp_boda_relacion_texto( $acompanante['relacion'] ) ),
+				$acompanante['menu_infantil'] ? 'menú infantil' : '',
+				$acompanante['alergias'],
+			)
+		);
+		$partes[] = $acompanante['nombre'] . ( $extras ? ' (' . implode( '; ', $extras ) . ')' : '' );
+	}
+	return implode( ', ', $partes );
+}
+
+/**
+ * Menú infantil de una respuesta, para el panel, el CSV y el correo: los nombres de los
+ * acompañantes que lo piden, o "Sí"/"No" en respuestas antiguas (antes se preguntaba por respuesta).
+ */
+function rsvp_boda_menu_infantil_texto( array $respuesta ): string {
+	$nombres = array();
+	foreach ( rsvp_boda_decodificar_acompanantes( $respuesta['acompanantes'] ?? '' ) as $acompanante ) {
+		if ( $acompanante['menu_infantil'] ) {
+			$nombres[] = $acompanante['nombre'];
+		}
+	}
+	if ( $nombres ) {
+		return implode( ', ', $nombres );
+	}
+	return 'si' === ( $respuesta['menu_infantil'] ?? '' ) ? 'Sí' : 'No';
 }
 
 /**

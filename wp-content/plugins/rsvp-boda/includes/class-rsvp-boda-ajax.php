@@ -13,6 +13,8 @@ class RSVP_Boda_Ajax {
 
 	const NONCE_ACTION  = 'rsvp_boda_form';
 	const COOKIE_EDICION = 'rsvp_boda_edicion';
+	// Holgado a propósito: una familia en el mismo wifi puede enviar varias respuestas y corregirlas.
+	const MAX_ENVIOS_POR_HORA = 15;
 
 	public function __construct() {
 		add_action( 'wp_ajax_rsvp_boda_enviar', array( $this, 'manejar_envio' ) );
@@ -43,6 +45,21 @@ class RSVP_Boda_Ajax {
 		if ( ! empty( $_POST['rsvp_boda_web'] ) ) {
 			wp_send_json_success( array( 'mensaje' => '¡Gracias por tu confirmación!' ) );
 		}
+
+		// Límite de envíos por visitante (huella de la IP): sin esto un script podía meter miles de
+		// confirmaciones falsas y agotar el cupo diario de Brevo con los avisos a la pareja.
+		$clave_limite = 'rsvp_boda_envios_' . substr( rsvp_boda_hash_ip( $this->obtener_ip() ), 0, 32 );
+		$envios       = (int) get_transient( $clave_limite );
+		if ( $envios >= self::MAX_ENVIOS_POR_HORA ) {
+			$telefono_contacto = (string) rsvp_boda_get_option( 'telefono_contacto', '' );
+			wp_send_json_error(
+				array(
+					'mensaje' => 'Has enviado el formulario muchas veces seguidas. Espera un rato y vuelve a intentarlo' .
+						( '' !== $telefono_contacto ? ', o escríbenos al ' . $telefono_contacto : '' ) . ', por favor.',
+				)
+			);
+		}
+		set_transient( $clave_limite, $envios + 1, HOUR_IN_SECONDS );
 
 		$slug = sanitize_title( wp_unslash( $_POST['guest_slug'] ?? '' ) );
 
@@ -111,7 +128,9 @@ class RSVP_Boda_Ajax {
 
 		$necesita_bus = in_array( $_POST['necesita_bus'] ?? '', array( 'si', 'no' ), true ) ? $_POST['necesita_bus'] : 'no';
 		$parada_bus   = 'si' === $necesita_bus ? rsvp_boda_recortar( sanitize_text_field( wp_unslash( $_POST['parada_bus'] ?? '' ) ), 191 ) : '';
-		$menu_infantil = in_array( $_POST['menu_infantil'] ?? '', array( 'si', 'no' ), true ) ? $_POST['menu_infantil'] : 'no';
+		// El menú infantil solo se pide por acompañante (el titular es adulto); la columna de la
+		// respuesta queda en "si" si algún acompañante lo lleva, para contadores y filtros.
+		$menu_infantil = in_array( true, array_column( $acompanantes, 'menu_infantil' ), true ) ? 'si' : 'no';
 
 		$datos = array(
 			'nombre_completo'    => $nombre_completo,
@@ -164,7 +183,7 @@ class RSVP_Boda_Ajax {
 	 * sin confiar nunca en un contador declarado por el cliente, y respetando el permiso
 	 * de acompañante resuelto en servidor.
 	 *
-	 * Devuelve array( num, nombres ) o, si llegan acompañantes que no se pueden guardar (sin
+	 * Devuelve array( num, lista de array( nombre, relacion, alergias, menu_infantil ) ) o, si llegan acompañantes que no se pueden guardar (sin
 	 * permiso o por encima del límite), un string con el error para el invitado: antes se
 	 * descartaban en silencio y el invitado creía que venían.
 	 *
@@ -176,16 +195,38 @@ class RSVP_Boda_Ajax {
 			return array( 0, array() );
 		}
 
-		$nombres_recibidos = $_POST['acompanantes'] ?? array();
+		$nombres_recibidos  = $_POST['acompanantes'] ?? array();
+		$alergias_recibidas = $_POST['acompanantes_alergias'] ?? array();
+		$relaciones_recibidas = $_POST['acompanantes_relacion'] ?? array();
+		if ( ! is_array( $relaciones_recibidas ) ) {
+			$relaciones_recibidas = array();
+		}
+		// Casillas de menú infantil: solo llegan las marcadas, con la posición del acompañante como valor.
+		$infantil_recibidos = $_POST['acompanantes_infantil'] ?? array();
+		$posiciones_infantil = is_array( $infantil_recibidos ) ? array_map( 'intval', $infantil_recibidos ) : array();
 		if ( ! is_array( $nombres_recibidos ) ) {
 			return array( 0, array() );
 		}
+		if ( ! is_array( $alergias_recibidas ) ) {
+			$alergias_recibidas = array();
+		}
 
+		// Nombres y alergias llegan en dos listas paralelas (misma posición = mismo acompañante).
 		$limpios = array();
-		foreach ( $nombres_recibidos as $nombre_acompanante ) {
+		foreach ( array_values( $nombres_recibidos ) as $i => $nombre_acompanante ) {
 			$nombre_acompanante = rsvp_boda_recortar( sanitize_text_field( wp_unslash( (string) $nombre_acompanante ) ), 191 );
 			if ( '' !== $nombre_acompanante ) {
-				$limpios[] = $nombre_acompanante;
+				$alergias_acompanante = array_values( $alergias_recibidas )[ $i ] ?? '';
+				$relacion_acompanante = sanitize_key( (string) ( array_values( $relaciones_recibidas )[ $i ] ?? '' ) );
+				if ( '' === rsvp_boda_relacion_texto( $relacion_acompanante ) ) {
+					$relacion_acompanante = '';
+				}
+				$limpios[] = array(
+					'nombre'        => $nombre_acompanante,
+					'relacion'      => $relacion_acompanante,
+					'alergias'      => rsvp_boda_recortar( sanitize_text_field( wp_unslash( (string) $alergias_acompanante ) ), 500 ),
+					'menu_infantil' => in_array( $i, $posiciones_infantil, true ),
+				);
 			}
 		}
 

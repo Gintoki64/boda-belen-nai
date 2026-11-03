@@ -26,37 +26,109 @@
 			}
 		}
 
-		// Nombres ya escritos (o guardados de antes), por posición. Se guardan antes de cada repintado
-		// para que cambiar el número de acompañantes o pasar por "No" y volver a "Sí" no los borre.
-		let nombresAcompanantes = acompanantesPrevios.slice();
+		// Nombres y alergias ya escritos (o guardados de antes), por posición. Se guardan antes de cada
+		// repintado para que cambiar el número de acompañantes o pasar por "No" y volver a "Sí" no los borre.
+		// Las respuestas antiguas traen solo el nombre (string) en vez de { nombre, alergias }.
+		let datosAcompanantes = acompanantesPrevios.map( function ( item ) {
+			return typeof item === 'string'
+				? { nombre: item, relacion: '', alergias: '', infantil: false }
+				: { nombre: item.nombre || '', relacion: item.relacion || '', alergias: item.alergias || '', infantil: !! item.menu_infantil };
+		} );
 
 		function guardarNombresEscritos() {
-			contenedorNombres.querySelectorAll( 'input[name="acompanantes[]"]' ).forEach( function ( input, i ) {
-				nombresAcompanantes[ i ] = input.value;
+			contenedorNombres.querySelectorAll( '.rsvp-boda-acompanante' ).forEach( function ( bloque, i ) {
+				datosAcompanantes[ i ] = {
+					nombre: bloque.querySelector( 'input[name="acompanantes[]"]' ).value,
+					relacion: bloque.querySelector( 'select[name="acompanantes_relacion[]"]' ).value,
+					alergias: bloque.querySelector( 'input[name="acompanantes_alergias[]"]' ).value,
+					infantil: bloque.querySelector( 'input[name="acompanantes_infantil[]"]' ).checked,
+				};
 			} );
+		}
+
+		function crearCampo( id, nombreCampo, etiqueta, valor, obligatorio, maxLength ) {
+			const p = document.createElement( 'p' );
+			p.className = 'rsvp-boda-campo';
+			const label = document.createElement( 'label' );
+			label.textContent = etiqueta;
+			label.setAttribute( 'for', id );
+			const input = document.createElement( 'input' );
+			input.type = 'text';
+			input.id = id;
+			input.name = nombreCampo;
+			input.required = obligatorio;
+			input.maxLength = maxLength;
+			input.value = valor;
+			p.appendChild( label );
+			p.appendChild( document.createElement( 'br' ) );
+			p.appendChild( input );
+			return p;
+		}
+
+		// Mismas opciones que rsvp_boda_relaciones_acompanante() en helpers.php (el servidor las valida).
+		const RELACIONES = [
+			[ 'pareja', 'Pareja' ],
+			[ 'hijo', 'Hijo/a' ],
+			[ 'familiar', 'Otro familiar' ],
+			[ 'amigo', 'Amigo/a' ],
+			[ 'otro', 'Otro' ],
+		];
+
+		function crearSelectRelacion( i, valor ) {
+			const p = document.createElement( 'p' );
+			p.className = 'rsvp-boda-campo';
+			const label = document.createElement( 'label' );
+			label.textContent = 'Es tu…';
+			label.setAttribute( 'for', 'rsvp-acompanante-relacion-' + i );
+			const select = document.createElement( 'select' );
+			select.id = 'rsvp-acompanante-relacion-' + i;
+			select.name = 'acompanantes_relacion[]';
+			select.required = true;
+			const vacia = document.createElement( 'option' );
+			vacia.value = '';
+			vacia.textContent = 'Elige: pareja, hijo/a…';
+			select.appendChild( vacia );
+			RELACIONES.forEach( function ( relacion ) {
+				const opt = document.createElement( 'option' );
+				opt.value = relacion[ 0 ];
+				opt.textContent = relacion[ 1 ];
+				select.appendChild( opt );
+			} );
+			select.value = valor;
+			p.appendChild( label );
+			p.appendChild( select );
+			return p;
+		}
+
+		// El valor es la posición del acompañante: las casillas sin marcar no se envían, así que el
+		// servidor no puede emparejarlas por orden como hace con nombres y alergias.
+		function crearCasillaInfantil( i, marcada ) {
+			const p = document.createElement( 'p' );
+			p.className = 'rsvp-boda-campo';
+			const label = document.createElement( 'label' );
+			const casilla = document.createElement( 'input' );
+			casilla.type = 'checkbox';
+			casilla.name = 'acompanantes_infantil[]';
+			casilla.value = String( i );
+			casilla.checked = marcada;
+			label.appendChild( casilla );
+			label.appendChild( document.createTextNode( ' Menú infantil' ) );
+			p.appendChild( label );
+			return p;
 		}
 
 		function pintarInputsAcompanantes( cantidad ) {
 			guardarNombresEscritos();
 			contenedorNombres.innerHTML = '';
 			for ( let i = 0; i < cantidad; i++ ) {
-				const idCampo = 'rsvp-acompanante-' + i;
-				const label = document.createElement( 'label' );
-				label.textContent = 'Nombre del acompañante ' + ( i + 1 );
-				label.setAttribute( 'for', idCampo );
-				const input = document.createElement( 'input' );
-				input.type = 'text';
-				input.id = idCampo;
-				input.name = 'acompanantes[]';
-				input.required = true;
-				input.maxLength = 191;
-				input.value = nombresAcompanantes[ i ] || '';
-				const p = document.createElement( 'p' );
-				p.className = 'rsvp-boda-campo';
-				p.appendChild( label );
-				p.appendChild( document.createElement( 'br' ) );
-				p.appendChild( input );
-				contenedorNombres.appendChild( p );
+				const datos = datosAcompanantes[ i ] || { nombre: '', relacion: '', alergias: '', infantil: false };
+				const bloque = document.createElement( 'div' );
+				bloque.className = 'rsvp-boda-acompanante';
+				bloque.appendChild( crearCampo( 'rsvp-acompanante-' + i, 'acompanantes[]', 'Nombre del acompañante ' + ( i + 1 ), datos.nombre, true, 191 ) );
+				bloque.appendChild( crearSelectRelacion( i, datos.relacion ) );
+				bloque.appendChild( crearCampo( 'rsvp-acompanante-alergias-' + i, 'acompanantes_alergias[]', 'Sus alergias o intolerancias (si tiene)', datos.alergias, false, 500 ) );
+				bloque.appendChild( crearCasillaInfantil( i, datos.infantil ) );
+				contenedorNombres.appendChild( bloque );
 			}
 		}
 
@@ -118,7 +190,7 @@
 				radiosAsiste.forEach( function ( radio ) {
 					radio.checked = false;
 				} );
-				form.querySelectorAll( 'input[name="menu_infantil"], input[name="necesita_bus"]' ).forEach( function ( radio ) {
+				form.querySelectorAll( 'input[name="necesita_bus"]' ).forEach( function ( radio ) {
 					radio.checked = 'no' === radio.value;
 				} );
 				const selectParada = document.getElementById( 'rsvp-parada-bus' );
@@ -130,7 +202,7 @@
 				}
 
 				contenedorNombres.innerHTML = '';
-				nombresAcompanantes = [];
+				datosAcompanantes = [];
 				if ( selectNumAcomp ) {
 					selectNumAcomp.value = '0';
 				}
@@ -156,6 +228,65 @@
 			mensajes.textContent = texto;
 			mensajes.className = tipo === 'error' ? 'rsvp-boda-mensaje-error' : 'rsvp-boda-mensaje-exito';
 			mensajes.scrollIntoView( { behavior: 'smooth', block: 'center' } );
+		}
+
+		// Tras un envío correcto se oculta el formulario y se enseña una tarjeta de "enviada": con solo
+		// una línea de aviso encima del botón había invitados que creían que no se había mandado.
+		function mostrarPantallaEnviada( texto ) {
+			mensajes.textContent = '';
+			mensajes.className = '';
+
+			let pantalla = document.getElementById( 'rsvp-boda-enviada' );
+			if ( ! pantalla ) {
+				pantalla = document.createElement( 'div' );
+				pantalla.id = 'rsvp-boda-enviada';
+				pantalla.className = 'rsvp-boda-enviada';
+				pantalla.setAttribute( 'role', 'status' );
+				pantalla.tabIndex = -1;
+
+				const icono = document.createElement( 'div' );
+				icono.className = 'rsvp-boda-enviada__icono';
+				icono.setAttribute( 'aria-hidden', 'true' );
+				icono.textContent = '✓';
+
+				const titulo = document.createElement( 'p' );
+				titulo.className = 'rsvp-boda-enviada__titulo';
+				titulo.textContent = '¡Confirmación enviada!';
+
+				const detalle = document.createElement( 'p' );
+				detalle.className = 'rsvp-boda-enviada__mensaje';
+
+				const nota = document.createElement( 'p' );
+				nota.className = 'rsvp-boda-enviada__nota';
+
+				const botonModificar = document.createElement( 'button' );
+				botonModificar.type = 'button';
+				botonModificar.className = 'boda-boton boda-boton--secundario rsvp-boda-enviada__modificar';
+				botonModificar.textContent = 'Modificar mi respuesta';
+				botonModificar.addEventListener( 'click', function () {
+					pantalla.hidden = true;
+					form.hidden = false;
+					form.scrollIntoView( { behavior: 'smooth', block: 'start' } );
+				} );
+
+				pantalla.append( icono, titulo, detalle, nota, botonModificar );
+				form.parentNode.insertBefore( pantalla, form );
+			}
+
+			const email = form.querySelector( 'input[name="email"]' );
+			pantalla.querySelector( '.rsvp-boda-enviada__mensaje' ).textContent = texto;
+			pantalla.querySelector( '.rsvp-boda-enviada__nota' ).textContent = email && email.value.trim()
+				? 'En unos minutos te llegará un correo con tu respuesta. Si necesitas cambiar algo, puedes volver a esta página cuando quieras.'
+				: 'Si necesitas cambiar algo, puedes volver a esta página cuando quieras.';
+
+			form.hidden = true;
+			const aviso = document.getElementById( 'rsvp-boda-aviso-previo' );
+			if ( aviso ) {
+				aviso.hidden = true;
+			}
+			pantalla.hidden = false;
+			pantalla.scrollIntoView( { behavior: 'smooth', block: 'center' } );
+			pantalla.focus( { preventScroll: true } );
 		}
 
 		function enviar() {
@@ -192,7 +323,7 @@
 						if ( campoNueva ) {
 							campoNueva.value = '0';
 						}
-						mostrarMensaje( json.data.mensaje, 'exito' );
+						mostrarPantallaEnviada( json.data.mensaje );
 					} else {
 						mostrarMensaje( ( json.data && json.data.mensaje ) || 'No se ha podido enviar el formulario. Inténtalo de nuevo.', 'error' );
 					}
