@@ -245,6 +245,34 @@ img {
 	border-radius: var(--boda-radio);
 }
 
+/* Subtítulos dentro del texto libre (p. ej. zonas de alojamiento): igual que las etiquetas "Ceremonia"/"Celebración". */
+.boda-contenido-libre h3 {
+	font-family: var(--boda-fuente-cuerpo);
+	font-size: 0.78rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	color: var(--boda-granate);
+	margin: 1.4em 0 0.4em;
+}
+
+.boda-contenido-libre ul {
+	margin-top: 0;
+}
+
+.boda-contenido-libre a {
+	color: var(--boda-granate);
+	text-decoration: underline;
+	text-decoration-color: rgba(217, 164, 65, 0.7);
+	text-underline-offset: 0.18em;
+}
+
+.boda-contenido-libre a:hover,
+.boda-contenido-libre a:focus-visible {
+	color: var(--boda-granate-claro);
+	text-decoration-color: currentColor;
+}
+
 /* ---------- Portada ---------- */
 
 .boda-seccion--portada {
@@ -271,6 +299,114 @@ img {
 .boda-portada__y {
 	color: #b0822f; /* dorado algo más oscuro que el albero, para que se lea sobre el halo crema */
 	padding: 0 0.2em;
+}
+
+/* "Joaquín" ⇄ "Nai": los dos nombres apilados en la misma celda; el que sale se desvanece con
+   desenfoque y el que entra se "escribe" de izquierda a derecha, con un destello dorado entre medias. */
+.boda-portada__cambio {
+	position: relative;
+	display: inline-grid;
+	vertical-align: baseline;
+	background: none;
+	border: 0;
+	padding: 0;
+	margin: 0;
+	font: inherit;
+	color: inherit;
+	line-height: inherit;
+	text-shadow: inherit;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+	justify-content: center;
+	transition: width 0.9s cubic-bezier(0.55, 0.1, 0.3, 1) 0.15s;
+}
+
+.boda-portada__cambio:focus-visible {
+	outline: 1px dotted #b0822f;
+	outline-offset: 0.15em;
+}
+
+.boda-portada__cambio-nombre {
+	grid-area: 1 / 1;
+	justify-self: center;
+	opacity: 0;
+	filter: blur(6px);
+	transform: translateY(-0.12em);
+	clip-path: inset(-0.4em 100% -0.4em -0.4em);
+	transition: opacity 0.55s ease, filter 0.55s ease, transform 0.55s ease, clip-path 0s linear 0.55s;
+}
+
+.boda-portada__cambio-nombre.is-activo {
+	opacity: 1;
+	filter: none;
+	transform: none;
+	clip-path: inset(-0.4em -0.4em -0.4em -0.4em);
+	transition: opacity 0.4s ease 0.3s, filter 0.4s ease 0.3s, transform 0.4s ease 0.3s,
+		clip-path 1.1s cubic-bezier(0.55, 0.1, 0.3, 1) 0.3s;
+}
+
+/* Al cargar la página el nombre empieza visible sin animación de entrada. */
+.boda-portada__cambio:not(.ha-cambiado) .boda-portada__cambio-nombre.is-activo {
+	transition: none;
+}
+
+.boda-portada__cambio:hover .is-activo {
+	text-shadow: 0 1px 16px rgba(250, 247, 242, 0.9), 0 0 18px rgba(217, 164, 65, 0.55);
+}
+
+/* Destello dorado en el momento del cambio. */
+.boda-portada__cambio::after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 1.4em;
+	height: 1.4em;
+	margin: -0.7em 0 0 -0.7em;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(255, 236, 190, 0.95) 0%, rgba(217, 164, 65, 0.55) 35%, rgba(217, 164, 65, 0) 70%);
+	opacity: 0;
+	transform: scale(0.2);
+	pointer-events: none;
+}
+
+.boda-portada__cambio.brilla::after {
+	animation: boda-destello 0.9s ease-out;
+}
+
+/* Pista discreta: unos segundos después de cargar, el nombre brilla una vez en dorado. */
+.boda-portada__cambio.pista .is-activo {
+	animation: boda-pista 1.8s ease-in-out;
+}
+
+@keyframes boda-destello {
+	0% { opacity: 0; transform: scale(0.2); }
+	30% { opacity: 1; transform: scale(1.3); }
+	100% { opacity: 0; transform: scale(2.2); }
+}
+
+@keyframes boda-pista {
+	0%, 100% { text-shadow: 0 1px 16px rgba(250, 247, 242, 0.9), 0 1px 3px rgba(250, 247, 242, 0.9); }
+	50% { text-shadow: 0 1px 16px rgba(250, 247, 242, 0.9), 0 0 22px rgba(217, 164, 65, 0.85); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.boda-portada__cambio {
+		transition: none;
+	}
+
+	.boda-portada__cambio-nombre,
+	.boda-portada__cambio-nombre.is-activo {
+		filter: none;
+		transform: none;
+		clip-path: none;
+		transition: opacity 0.3s ease;
+	}
+
+	.boda-portada__cambio.brilla::after,
+	.boda-portada__cambio.pista .is-activo {
+		animation: none;
+	}
 }
 
 .boda-portada__fecha {
@@ -436,6 +572,16 @@ img {
 	font-size: 1.08em;
 }
 
+/* Remate de la historia ("¡Nos casamos!"): con la letra de los títulos, centrado. */
+.boda-historia__texto p:last-of-type:not(:first-of-type) {
+	margin: 0.6em 0 0;
+	font-family: var(--boda-fuente-titulares);
+	font-size: 2.1em;
+	line-height: 1.2;
+	color: var(--boda-granate);
+	text-align: center;
+}
+
 .boda-historia__galeria {
 	display: grid;
 	grid-template-columns: 1fr;
@@ -453,6 +599,58 @@ img {
 	.boda-historia__galeria {
 		grid-template-columns: repeat(2, 1fr);
 	}
+
+	/* Si la última foto queda sola en su fila (o solo hay una), va centrada en vez de a la izquierda. */
+	.boda-historia__imagen:last-child:nth-child(odd) {
+		grid-column: 1 / -1;
+		justify-self: center;
+		width: calc(50% - 0.375em);
+	}
+}
+
+/* ---------- Contacto ---------- */
+
+.boda-seccion--contacto .boda-seccion__contenido > p {
+	text-align: center;
+}
+
+.boda-contacto__telefonos {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.5em 2.5em;
+	margin: 0.25em 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.boda-contacto__telefonos li {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.1em;
+}
+
+.boda-contacto__nombre {
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--boda-color-texto-suave);
+}
+
+.boda-contacto__telefonos a {
+	color: var(--boda-granate);
+	font-size: 1.15em;
+	font-variant-numeric: tabular-nums;
+	text-decoration: underline;
+	text-decoration-color: var(--boda-albero);
+	text-underline-offset: 4px;
+}
+
+.boda-contacto__telefonos a:hover,
+.boda-contacto__telefonos a:focus {
+	color: var(--boda-granate-claro);
 }
 
 /* ---------- Ceremonia ---------- */
@@ -509,21 +707,56 @@ img {
 
 /* ---------- Regalo ---------- */
 
+.boda-regalo__mostrar {
+	display: block;
+	margin: 1.5em auto 0;
+}
+
+.boda-regalo__mostrar[hidden] {
+	display: none;
+}
+
+/* Tarjeta de la cuenta: blanca con filete dorado, aparece al pulsar "Ver número de cuenta". */
 .boda-regalo__iban {
 	background: #fff;
+	border: 1px solid rgba(217, 164, 65, 0.6);
 	border-radius: var(--boda-radio);
-	padding: 1.25em;
+	box-shadow: inset 0 0 0 4px #fff, inset 0 0 0 5px rgba(217, 164, 65, 0.35);
+	padding: 1.6em 1.25em 1.4em;
 	text-align: center;
-	margin-top: 1em;
+	margin: 1.25em auto 0;
+	max-width: 30em;
+	animation: boda-aparecer 0.35s ease-out;
+}
+
+.boda-regalo__iban-etiqueta {
+	display: block;
+	font-size: 0.72rem;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--boda-color-texto-suave);
+	margin-bottom: 0.3em;
 }
 
 .boda-regalo__iban-valor {
 	display: block;
-	font-size: 1.15rem;
+	font-size: clamp(1.02rem, 4.2vw, 1.25rem);
 	font-weight: 700;
-	letter-spacing: 0.03em;
-	margin-bottom: 0.75em;
-	word-break: break-all;
+	letter-spacing: 0.06em;
+	color: var(--boda-granate);
+	font-variant-numeric: tabular-nums;
+	margin-bottom: 1em;
+	word-spacing: 0.15em;
+}
+
+.boda-regalo__titular {
+	margin: 0 0 1.2em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.boda-regalo__iban {
+		animation: none;
+	}
 }
 
 /* ---------- Pie ---------- */

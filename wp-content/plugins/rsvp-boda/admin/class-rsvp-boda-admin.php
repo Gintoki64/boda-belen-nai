@@ -32,6 +32,7 @@ class RSVP_Boda_Admin {
 		add_submenu_page( 'rsvp-boda-confirmaciones', 'Ajustes generales', 'Ajustes generales', 'manage_options', 'rsvp-boda-ajustes', array( $this, 'vista_ajustes' ) );
 		add_submenu_page( 'rsvp-boda-confirmaciones', 'Invitados y enlaces', 'Invitados y enlaces', 'manage_options', 'rsvp-boda-invitados', array( $this, 'vista_invitados' ) );
 		add_submenu_page( 'rsvp-boda-confirmaciones', 'Mesas', 'Mesas', 'manage_options', 'rsvp-boda-mesas', array( $this, 'vista_mesas' ) );
+		add_submenu_page( 'rsvp-boda-confirmaciones', 'Menú', 'Menú', 'manage_options', 'rsvp-boda-menu', array( $this, 'vista_menu' ) );
 	}
 
 	public function vista_confirmaciones(): void {
@@ -48,6 +49,10 @@ class RSVP_Boda_Admin {
 
 	public function vista_mesas(): void {
 		require_once RSVP_BODA_PLUGIN_DIR . 'admin/view-mesas.php';
+	}
+
+	public function vista_menu(): void {
+		require_once RSVP_BODA_PLUGIN_DIR . 'admin/view-menu.php';
 	}
 
 	public function mostrar_avisos(): void {

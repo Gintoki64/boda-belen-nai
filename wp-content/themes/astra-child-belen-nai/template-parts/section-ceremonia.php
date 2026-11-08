@@ -1,6 +1,6 @@
 <?php
 /**
- * 3. Ceremonia y banquete: hora, lugar, mapa embebido, cómo llegar y aparcamiento.
+ * 3. Ceremonia y celebración: hora, lugar, mapa embebido, cómo llegar y aparcamiento.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <section id="ceremonia" class="boda-seccion boda-seccion--ceremonia">
 
 	<div class="boda-seccion__contenido">
-		<h2 class="boda-seccion__titulo">Ceremonia y banquete</h2>
+		<h2 class="boda-seccion__titulo">Ceremonia y celebración</h2>
 
 		<div class="boda-ceremonia__bloques">
 			<div class="boda-ceremonia__bloque">
@@ -32,7 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 
 			<div class="boda-ceremonia__bloque">
-				<h3>Banquete</h3>
+				<h3>Celebración</h3>
 				<p>
 					<strong><?php echo esc_html( rsvp_boda_get_option( 'lugar_banquete' ) ); ?></strong><br />
 					<?php echo esc_html( rsvp_boda_get_option( 'direccion_banquete' ) ); ?>
@@ -43,7 +43,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						src="<?php echo esc_url( rsvp_boda_get_option( 'mapa_banquete_url' ) ); ?>"
 						loading="lazy"
 						referrerpolicy="no-referrer-when-downgrade"
-						title="Mapa del banquete"
+						title="Mapa de la celebración"
 					></iframe>
 				<?php endif; ?>
 			</div>

@@ -422,6 +422,487 @@
 	}
 }
 
+/* ---------- Menú ---------- */
+
+.rsvp-boda-menu-ayuda {
+	max-width: 860px;
+	color: #646970;
+}
+
+.rsvp-boda-menu-ayuda__voto {
+	white-space: nowrap;
+	font-weight: 600;
+}
+
+.rsvp-boda-menu-ayuda__voto--b,
+.rsvp-boda-menu-voto--b[aria-pressed="true"] {
+	color: #a0306a;
+}
+
+.rsvp-boda-menu-ayuda__voto--n,
+.rsvp-boda-menu-voto--n[aria-pressed="true"] {
+	color: #1f5fa8;
+}
+
+.rsvp-boda-menu-controles {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 12px;
+	margin: 0 0 12px;
+	padding: 12px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+}
+
+.rsvp-boda-menu-controles label {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.rsvp-boda-menu-filtros {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	margin: 0 0 16px;
+}
+
+.rsvp-boda-menu-filtros .button.is-activo {
+	background: #f0f0f1;
+	border-color: #8c8f94;
+	font-weight: 600;
+}
+
+.rsvp-boda-menu-tablero {
+	display: flex;
+	align-items: flex-start;
+	gap: 16px;
+}
+
+.rsvp-boda-menu-carta {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.rsvp-boda-menu-seccion {
+	margin: 0 0 20px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+}
+
+.rsvp-boda-menu-seccion__cabecera {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 12px 14px 0;
+}
+
+.rsvp-boda-menu-seccion__cabecera h2 {
+	margin: 0;
+	font-size: 17px;
+}
+
+.rsvp-boda-menu-seccion__numero {
+	color: #b0822f;
+}
+
+.rsvp-boda-menu-seccion__estado {
+	flex: 0 0 auto;
+	padding: 2px 8px;
+	border-radius: 12px;
+	font-size: 12px;
+	font-weight: 600;
+	background: #f0f0f1;
+	color: #50575e;
+}
+
+.rsvp-boda-menu-seccion__estado.is-ok {
+	background: #edfaef;
+	color: #1e7e34;
+}
+
+.rsvp-boda-menu-seccion__estado.is-falta {
+	background: #fff8e5;
+	color: #8a6d00;
+}
+
+.rsvp-boda-menu-seccion__ayuda {
+	margin: 4px 14px 8px;
+	color: #646970;
+}
+
+.rsvp-boda-menu-lista {
+	margin: 0;
+}
+
+.rsvp-boda-menu-plato {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 0;
+	padding: 8px 14px;
+	border-top: 1px solid #f0f0f1;
+	border-left: 4px solid transparent;
+}
+
+.rsvp-boda-menu-plato.is-ambos {
+	background: #fdf6f9;
+}
+
+.rsvp-boda-menu-plato.is-elegido {
+	background: #f3faf4;
+	border-left-color: #1e7e34;
+}
+
+.rsvp-boda-menu-plato__texto {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.rsvp-boda-menu-plato__nombre {
+	margin-right: 6px;
+}
+
+.rsvp-boda-menu-plato.is-elegido .rsvp-boda-menu-plato__nombre {
+	font-weight: 600;
+}
+
+.rsvp-boda-menu-plato__etiquetas {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	vertical-align: 1px;
+}
+
+.rsvp-boda-menu-etiqueta {
+	padding: 0 6px;
+	border: 1px solid #dcdcde;
+	border-radius: 3px;
+	font-size: 11px;
+	line-height: 18px;
+	color: #646970;
+}
+
+.rsvp-boda-menu-etiqueta.is-base {
+	border-color: #b0822f;
+	background: #fbf5e9;
+	color: #7a5a1e;
+	font-weight: 600;
+}
+
+.rsvp-boda-menu-etiqueta--precio {
+	border-color: #c3c4c7;
+	background: #f6f7f7;
+	color: #2c3338;
+}
+
+.rsvp-boda-menu-plato__nota {
+	display: block;
+	font-size: 12px;
+	color: #646970;
+	font-style: italic;
+}
+
+.rsvp-boda-menu-plato__acciones {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.rsvp-boda-menu-voto {
+	padding: 3px 8px;
+	border: 1px solid #dcdcde;
+	border-radius: 14px;
+	background: #fff;
+	color: #8c8f94;
+	font-size: 12px;
+	line-height: 18px;
+	cursor: pointer;
+}
+
+.rsvp-boda-menu-voto:hover {
+	border-color: #8c8f94;
+	color: #50575e;
+}
+
+.rsvp-boda-menu-voto[aria-pressed="true"] {
+	font-weight: 600;
+}
+
+.rsvp-boda-menu-voto--b[aria-pressed="true"] {
+	border-color: #a0306a;
+	background: #fbeef4;
+}
+
+.rsvp-boda-menu-voto--n[aria-pressed="true"] {
+	border-color: #1f5fa8;
+	background: #edf3fb;
+}
+
+.rsvp-boda-menu-voto--cata[aria-pressed="true"] {
+	border-color: #b0822f;
+	background: #fbf5e9;
+	color: #7a5a1e;
+	font-weight: 600;
+}
+
+.rsvp-boda-menu-plato.is-cata {
+	box-shadow: inset -4px 0 0 #b0822f;
+}
+
+.rsvp-boda-menu-cata {
+	margin: 0 0 14px;
+	padding: 10px 12px;
+	background: #fbf5e9;
+	border: 1px solid #e4cf9f;
+	border-radius: 4px;
+}
+
+.rsvp-boda-menu-cata h2 {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	margin: 0 0 6px;
+	font-size: 15px;
+}
+
+.rsvp-boda-menu-cata__contador {
+	font-size: 12px;
+	color: #7a5a1e;
+}
+
+.rsvp-boda-menu-cata__contador.is-completo {
+	color: #1e7e34;
+	font-weight: 600;
+}
+
+.rsvp-boda-menu-cata ol {
+	margin: 0 0 0 18px;
+}
+
+.rsvp-boda-menu-cata__tipo {
+	color: #646970;
+	font-size: 12px;
+}
+
+.rsvp-boda-menu-elegir {
+	min-width: 84px;
+}
+
+.rsvp-boda-menu-vacio {
+	margin: 0;
+	padding: 8px 14px 12px;
+	color: #8c8f94;
+	font-style: italic;
+}
+
+.rsvp-boda-menu-extras {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 10px 14px 14px;
+	border-top: 1px solid #f0f0f1;
+}
+
+.rsvp-boda-menu-resumen {
+	flex: 0 0 320px;
+	position: sticky;
+	top: 46px;
+	max-height: calc(100vh - 70px);
+	overflow-y: auto;
+	padding: 12px 14px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	box-sizing: border-box;
+}
+
+.rsvp-boda-menu-resumen h2 {
+	margin: 0 0 8px;
+}
+
+.rsvp-boda-menu-resumen h3 {
+	margin: 10px 0 2px;
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: #646970;
+}
+
+.rsvp-boda-menu-resumen ul {
+	margin: 0 0 0 16px;
+	list-style: disc;
+}
+
+.rsvp-boda-menu-resumen li {
+	margin: 0;
+}
+
+.rsvp-boda-menu-resumen__vacio {
+	margin: 0;
+	color: #8c8f94;
+}
+
+.rsvp-boda-menu-resumen__vacio.is-falta {
+	color: #8a6d00;
+	font-weight: 600;
+}
+
+.rsvp-boda-menu-resumen__aviso {
+	margin: 6px 0 0;
+	font-size: 12px;
+	color: #646970;
+}
+
+.rsvp-boda-menu-resumen__aviso.is-lejos {
+	color: #8a6d00;
+}
+
+.rsvp-boda-menu-precio {
+	margin-top: 12px;
+	padding-top: 4px;
+	border-top: 1px solid #dcdcde;
+}
+
+.rsvp-boda-menu-precio table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.rsvp-boda-menu-precio td {
+	padding: 2px 0;
+	vertical-align: top;
+}
+
+.rsvp-boda-menu-precio td + td {
+	padding-left: 8px;
+	text-align: right;
+	white-space: nowrap;
+}
+
+.rsvp-boda-menu-precio tr.is-total td {
+	border-top: 1px solid #dcdcde;
+	font-weight: 600;
+}
+
+.rsvp-boda-menu-precio__aviso {
+	margin: 6px 0 0;
+	font-size: 12px;
+	color: #8a6d00;
+}
+
+.rsvp-boda-menu-incluye {
+	margin-top: 12px;
+}
+
+.rsvp-boda-menu-incluye summary {
+	cursor: pointer;
+}
+
+.rsvp-boda-menu-incluye ul {
+	margin-top: 6px;
+}
+
+.rsvp-boda-menu-incluye p {
+	font-size: 12px;
+	color: #646970;
+}
+
+.rsvp-boda-menu-impresion {
+	display: none;
+}
+
+@media screen and (max-width: 960px) {
+	.rsvp-boda-menu-tablero {
+		flex-direction: column-reverse;
+		align-items: stretch;
+	}
+
+	.rsvp-boda-menu-resumen {
+		position: static;
+		max-height: none;
+		flex-basis: auto;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.rsvp-boda-menu-plato {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 6px;
+	}
+
+	.rsvp-boda-menu-plato__acciones {
+		justify-content: flex-end;
+	}
+}
+
+@media print {
+	body:has(.rsvp-boda-menu) #adminmenumain,
+	body:has(.rsvp-boda-menu) #wpadminbar,
+	body:has(.rsvp-boda-menu) #wpfooter,
+	body:has(.rsvp-boda-menu) .notice,
+	body:has(.rsvp-boda-menu) .update-nag,
+	body:has(.rsvp-boda-menu) .rsvp-boda-menu > *:not(.rsvp-boda-menu-impresion) {
+		display: none !important;
+	}
+
+	html.wp-toolbar:has(.rsvp-boda-menu) {
+		padding-top: 0;
+	}
+
+	body:has(.rsvp-boda-menu) #wpcontent,
+	body:has(.rsvp-boda-menu) #wpbody-content {
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+
+	body:has(.rsvp-boda-menu) .rsvp-boda-menu-impresion {
+		display: block;
+		color: #000;
+		font-size: 12pt;
+	}
+
+	body:has(.rsvp-boda-menu) .rsvp-boda-menu-impresion h1 {
+		margin: 0 0 12pt;
+	}
+
+	body:has(.rsvp-boda-menu) .rsvp-boda-menu-impresion__bloque {
+		break-inside: avoid;
+		page-break-inside: avoid;
+		margin-bottom: 10pt;
+	}
+
+	body:has(.rsvp-boda-menu) .rsvp-boda-menu-impresion h2 {
+		margin: 0 0 4pt;
+		font-size: 13pt;
+		border-bottom: 1px solid #000;
+	}
+
+	body:has(.rsvp-boda-menu) .rsvp-boda-menu-impresion ul {
+		margin: 0 0 0 18pt;
+		list-style: disc;
+	}
+
+	/* Hoja de la cata: hueco bajo cada plato para apuntar impresiones. */
+	body:has(.rsvp-boda-menu) .rsvp-boda-menu-impresion__cata li {
+		margin-bottom: 48pt;
+		padding-bottom: 4pt;
+		border-bottom: 1px dotted #666;
+		break-inside: avoid;
+	}
+
+	body:has(.rsvp-boda-menu) .rsvp-boda-menu-impresion__notas {
+		white-space: pre-wrap;
+	}
+}
+
 /* Alergias de cada acompañante en la columna "Acompañantes" de Confirmaciones. */
 .rsvp-boda-acompanante-alergias {
 	color: #b32d2e;

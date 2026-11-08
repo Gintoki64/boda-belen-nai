@@ -34,6 +34,7 @@ function rsvp_boda_ajustes_por_defecto(): array {
 		'hora_ceremonia'                 => '',
 		'fecha_limite_confirmar'         => '',
 		'telefono_contacto'               => '',
+		'telefono_contacto_2'            => '',
 		'lugar_ceremonia'                => '',
 		'direccion_ceremonia'            => '',
 		'mapa_ceremonia_url'             => '',

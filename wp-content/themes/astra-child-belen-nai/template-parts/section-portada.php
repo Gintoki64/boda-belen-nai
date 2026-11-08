@@ -21,10 +21,22 @@ $fecha_iso     = trim( $fecha_boda . 'T' . ( $hora_ceremonia ?: '00:00' ) );
 			<p class="boda-portada__saludo">Querido/a <?php echo esc_html( $invitado['nombre'] ); ?>,</p>
 		<?php endif; ?>
 
+		<?php
+		// Al pulsar el segundo nombre se transforma en su apodo (y vuelve al pulsar otra vez).
+		$nombre_2 = rsvp_boda_get_option( 'nombre_2' );
+		$apodo_2  = 'Nai';
+		?>
 		<h1 class="boda-portada__nombres">
 			<?php echo esc_html( rsvp_boda_get_option( 'nombre_1' ) ); ?>
 			<span class="boda-portada__y">&amp;</span>
-			<?php echo esc_html( rsvp_boda_get_option( 'nombre_2' ) ); ?>
+			<?php if ( $nombre_2 && $apodo_2 !== $nombre_2 ) : ?>
+				<button type="button" class="boda-portada__cambio" data-cambio-nombre aria-label="<?php echo esc_attr( $nombre_2 ); ?> (pulsa para verlo como <?php echo esc_attr( $apodo_2 ); ?>)">
+					<span class="boda-portada__cambio-nombre is-activo"><?php echo esc_html( $nombre_2 ); ?></span>
+					<span class="boda-portada__cambio-nombre" aria-hidden="true"><?php echo esc_html( $apodo_2 ); ?></span>
+				</button>
+			<?php else : ?>
+				<?php echo esc_html( $nombre_2 ); ?>
+			<?php endif; ?>
 		</h1>
 
 		<?php if ( $fecha_boda ) : ?>

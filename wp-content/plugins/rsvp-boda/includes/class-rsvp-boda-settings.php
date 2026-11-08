@@ -45,6 +45,25 @@ class RSVP_Boda_Settings {
 			);
 			wp_add_inline_script( 'rsvp-boda-mesas', 'var rsvpBodaMesas = ' . wp_json_encode( $datos ) . ';', 'before' );
 		}
+
+		// strpos con '-menu' a secas también encajaría en otras pantallas: se compara el final.
+		if ( '_page_rsvp-boda-menu' === substr( $hoja, -strlen( '_page_rsvp-boda-menu' ) ) ) {
+			wp_enqueue_script( 'rsvp-boda-menu', RSVP_BODA_PLUGIN_URL . 'assets/js/rsvp-boda-menu.js', array( 'jquery' ), (string) filemtime( RSVP_BODA_PLUGIN_DIR . 'assets/js/rsvp-boda-menu.js' ), true );
+			$datos = array(
+				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
+				'nonce'    => wp_create_nonce( 'rsvp_boda_menu' ),
+				'catalogo' => RSVP_Boda_Menu::catalogo(),
+				'estado'   => RSVP_Boda_Menu::obtener(),
+				'limites'  => array(
+					'invitados'  => RSVP_Boda_Menu::MAX_INVITADOS,
+					'horas'      => RSVP_Boda_Menu::MAX_HORAS_EXTRA,
+					'montaditos'    => RSVP_Boda_Menu::MAX_MONTADITOS,
+					'cata'          => RSVP_Boda_Menu::MAX_CATA,
+					'seccionesCata' => RSVP_Boda_Menu::SECCIONES_CATA,
+				),
+			);
+			wp_add_inline_script( 'rsvp-boda-menu', 'var rsvpBodaMenu = ' . wp_json_encode( $datos ) . ';', 'before' );
+		}
 	}
 
 	/**
@@ -61,18 +80,19 @@ class RSVP_Boda_Settings {
 					array( 'fecha_boda', 'Fecha de la boda', 'date' ),
 					array( 'hora_ceremonia', 'Hora de la ceremonia', 'time' ),
 					array( 'fecha_limite_confirmar', 'Fecha límite para confirmar', 'date' ),
-					array( 'telefono_contacto', 'Teléfono de contacto', 'tel' ),
+					array( 'telefono_contacto', 'Teléfono de contacto (Nai)', 'tel' ),
+					array( 'telefono_contacto_2', 'Teléfono de contacto (Belén)', 'tel' ),
 				),
 			),
 			'ceremonia_banquete' => array(
-				'titulo' => 'Ceremonia y banquete',
+				'titulo' => 'Ceremonia y celebración',
 				'campos' => array(
 					array( 'lugar_ceremonia', 'Lugar de la ceremonia', 'text' ),
 					array( 'direccion_ceremonia', 'Dirección de la ceremonia', 'text' ),
 					array( 'mapa_ceremonia_url', 'URL del mapa embebido (ceremonia)', 'url' ),
-					array( 'lugar_banquete', 'Lugar del banquete', 'text' ),
-					array( 'direccion_banquete', 'Dirección del banquete', 'text' ),
-					array( 'mapa_banquete_url', 'URL del mapa embebido (banquete)', 'url' ),
+					array( 'lugar_banquete', 'Lugar de la celebración', 'text' ),
+					array( 'direccion_banquete', 'Dirección de la celebración', 'text' ),
+					array( 'mapa_banquete_url', 'URL del mapa embebido (celebración)', 'url' ),
 					array( 'indicaciones_aparcamiento', 'Cómo llegar y aparcamiento', 'textarea' ),
 				),
 			),

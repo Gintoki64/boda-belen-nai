@@ -66,14 +66,80 @@
 			} );
 		}
 
-		// Botón "Copiar IBAN" de la sección de regalo.
+		// Portada: pulsar el segundo nombre lo cambia por su apodo ("Joaquín" ⇄ "Nai").
+		document.querySelectorAll( '[data-cambio-nombre]' ).forEach( function ( boton ) {
+			const nombres = boton.querySelectorAll( '.boda-portada__cambio-nombre' );
+			if ( nombres.length !== 2 ) {
+				return;
+			}
+			const etiqueta = function ( activo, otro ) {
+				return activo.textContent.trim() + ' (pulsa para verlo como ' + otro.textContent.trim() + ')';
+			};
+
+			boton.addEventListener( 'click', function () {
+				const actual = boton.querySelector( '.is-activo' );
+				const siguiente = actual === nombres[ 0 ] ? nombres[ 1 ] : nombres[ 0 ];
+
+				// El ancho pasa suavemente del nombre actual al nuevo, para que el título se recentre.
+				boton.style.width = actual.offsetWidth + 'px';
+				void boton.offsetWidth;
+				boton.style.width = siguiente.offsetWidth + 'px';
+
+				boton.classList.add( 'ha-cambiado' );
+				boton.classList.remove( 'pista', 'brilla' );
+				void boton.offsetWidth; // reinicia la animación del destello si se pulsa seguido
+				boton.classList.add( 'brilla' );
+
+				actual.classList.remove( 'is-activo' );
+				actual.setAttribute( 'aria-hidden', 'true' );
+				siguiente.classList.add( 'is-activo' );
+				siguiente.removeAttribute( 'aria-hidden' );
+				boton.setAttribute( 'aria-label', etiqueta( siguiente, actual ) );
+			} );
+
+			boton.addEventListener( 'animationend', function ( e ) {
+				if ( e.animationName === 'boda-destello' ) {
+					boton.classList.remove( 'brilla' );
+				}
+			} );
+
+			// El tamaño de letra depende del ancho de pantalla: si cambia, se vuelve a medir.
+			window.addEventListener( 'resize', function () {
+				if ( boton.style.width ) {
+					boton.style.width = boton.querySelector( '.is-activo' ).offsetWidth + 'px';
+				}
+			} );
+
+			// Pista: si en 3,5 s nadie lo ha pulsado, el nombre brilla una vez.
+			setTimeout( function () {
+				if ( ! boton.classList.contains( 'ha-cambiado' ) ) {
+					boton.classList.add( 'pista' );
+				}
+			}, 3500 );
+		} );
+
+		// "Ver número de cuenta": la cuenta está oculta hasta que se pulsa; el botón desaparece al abrirla.
+		document.querySelectorAll( '[data-mostrar-cuenta]' ).forEach( function ( boton ) {
+			boton.addEventListener( 'click', function () {
+				const cuenta = document.getElementById( boton.getAttribute( 'aria-controls' ) );
+				if ( ! cuenta ) {
+					return;
+				}
+				cuenta.hidden = false;
+				boton.setAttribute( 'aria-expanded', 'true' );
+				boton.hidden = true;
+				cuenta.querySelector( 'button' )?.focus();
+			} );
+		} );
+
+		// Botón "Copiar número" de la sección de regalo. Se copia sin espacios (data-iban).
 		document.querySelectorAll( '[data-copiar-iban]' ).forEach( function ( boton ) {
 			boton.addEventListener( 'click', function () {
 				const destino = document.getElementById( boton.dataset.copiarIban );
 				if ( ! destino ) {
 					return;
 				}
-				navigator.clipboard.writeText( destino.textContent.trim() ).then( function () {
+				navigator.clipboard.writeText( destino.dataset.iban || destino.textContent.trim() ).then( function () {
 					const original = boton.textContent;
 					boton.textContent = '¡Copiado!';
 					setTimeout( () => ( boton.textContent = original ), 1500 );

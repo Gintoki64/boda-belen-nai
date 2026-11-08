@@ -19,7 +19,7 @@ $imagenes = (array) rsvp_boda_get_option( 'historia_imagenes', array() );
 		<h2 class="boda-seccion__titulo">Nuestra historia</h2>
 
 		<?php if ( $texto ) : ?>
-			<div class="boda-historia__texto"><?php echo wp_kses_post( $texto ); ?></div>
+			<div class="boda-historia__texto"><?php echo wp_kses_post( wpautop( $texto ) ); // El editor guarda los párrafos como saltos de línea. ?></div>
 		<?php endif; ?>
 
 		<?php if ( $imagenes ) : ?>

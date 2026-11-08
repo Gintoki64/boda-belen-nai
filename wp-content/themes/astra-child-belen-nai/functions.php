@@ -97,15 +97,27 @@ function boda_theme_preconnect_adobe_fonts(): void {
 }
 
 /**
- * Imagen de reserva para Open Graph si no se ha subido ninguna en los ajustes del plugin.
+ * Imagen para Open Graph (vista previa en WhatsApp/Telegram): la subida en los ajustes del plugin
+ * o, si no hay, la del theme. Devuelve [url, ancho, alto].
+ *
+ * La del theme tiene todo dentro del cuadrado central, porque WhatsApp a veces la recorta en
+ * cuadrado. Si se cambia, usar un nombre de archivo nuevo: las apps cachean la vista previa.
  */
-function boda_theme_og_imagen_url(): string {
+function boda_theme_og_imagen(): array {
 	$id = (int) rsvp_boda_get_option( 'og_imagen_id', 0 );
 	if ( $id ) {
-		$url = wp_get_attachment_image_url( $id, 'full' );
-		if ( $url ) {
-			return $url;
+		$imagen = wp_get_attachment_image_src( $id, 'full' );
+		if ( $imagen ) {
+			return array( $imagen[0], (int) $imagen[1], (int) $imagen[2] );
 		}
 	}
-	return BODA_THEME_URL . '/assets/images/og-default.jpg';
+	return array( BODA_THEME_URL . '/assets/images/og-invitacion-v2.jpg', 1200, 630 );
+}
+
+/**
+ * "600112233" → "600 11 22 33" (móviles españoles de 9 cifras); cualquier otro formato se deja tal cual.
+ */
+function boda_theme_telefono_legible( string $telefono ): string {
+	$cifras = preg_replace( '/\s+/', '', $telefono );
+	return preg_match( '/^(\d{3})(\d{2})(\d{2})(\d{2})$/', $cifras, $m ) ? "$m[1] $m[2] $m[3] $m[4]" : $telefono;
 }

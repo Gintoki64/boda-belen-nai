@@ -10,19 +10,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $og_titulo      = rsvp_boda_get_option( 'og_titulo' ) ?: ( rsvp_boda_get_option( 'nombre_1' ) . ' & ' . rsvp_boda_get_option( 'nombre_2' ) );
 $og_descripcion = rsvp_boda_get_option( 'og_descripcion' ) ?: 'Confirma tu asistencia a nuestra boda';
-$og_imagen      = boda_theme_og_imagen_url();
+list( $og_imagen, $og_ancho, $og_alto ) = boda_theme_og_imagen();
 ?>
 <!doctype html>
 <html <?php language_attributes(); ?>>
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="theme-color" content="#1f3a6e">
+	<meta name="theme-color" content="#752a22">
 
 	<meta property="og:type" content="website">
+	<meta property="og:locale" content="es_ES">
+	<meta property="og:site_name" content="<?php echo esc_attr( $og_titulo ); ?>">
 	<meta property="og:title" content="<?php echo esc_attr( $og_titulo ); ?>">
 	<meta property="og:description" content="<?php echo esc_attr( $og_descripcion ); ?>">
 	<meta property="og:image" content="<?php echo esc_url( $og_imagen ); ?>">
+	<meta property="og:image:secure_url" content="<?php echo esc_url( $og_imagen ); ?>">
+	<?php if ( $og_ancho && $og_alto ) : ?>
+		<meta property="og:image:width" content="<?php echo esc_attr( (string) $og_ancho ); ?>">
+		<meta property="og:image:height" content="<?php echo esc_attr( (string) $og_alto ); ?>">
+	<?php endif; ?>
+	<meta property="og:image:alt" content="Invitación de boda de <?php echo esc_attr( rsvp_boda_get_option( 'nombre_1' ) . ' y ' . rsvp_boda_get_option( 'nombre_2' ) ); ?>">
 	<meta property="og:url" content="<?php echo esc_url( rsvp_boda_get_landing_url() ); ?>">
 
 	<meta name="twitter:card" content="summary_large_image">

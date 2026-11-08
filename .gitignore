@@ -20,3 +20,9 @@ Thumbs.db
 *.xlsx
 *.xls
 ~$*
+
+# Documentos y fotos personales sueltos en la raíz (catering, fotos, bloqueos de LibreOffice)
+*.doc
+*.docx
+.~lock.*
+fotoHistoria.jpg

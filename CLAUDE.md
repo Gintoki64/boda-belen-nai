@@ -451,3 +451,53 @@ Ordenado por importancia: primero lo que cuesta dinero, luego datos personales, 
   servidor, nota del correo si dejó email y botón "Modificar mi respuesta" que vuelve al formulario
   con los datos). Estilos en main.css del theme (`.rsvp-boda-enviada*`). Los errores siguen
   saliendo como antes en `#rsvp-boda-mensajes`.
+
+## Cambios del 2026-11-08 (subidos por FTPS y verificados)
+
+- **"Banquete" → "Celebración"** en la web (`section-ceremonia.php`: título "Ceremonia y celebración",
+  etiqueta y título del mapa) y en las etiquetas de Ajustes generales. Las claves de opción siguen
+  siendo `lugar_banquete` / `direccion_banquete` / `mapa_banquete_url` (no renombrar: perderían el valor).
+- **Cuenta de regalos oculta tras un botón** (`section-regalo.php` + `nav-anchors.js` + main.css):
+  "Ver número de cuenta" muestra la tarjeta con el IBAN en grupos de 4, el beneficiario
+  (`regalo_titular`, etiqueta "Beneficiario") y "Copiar número" (copia sin espacios, `data-iban`).
+  Solo se pinta si `regalo_iban` tiene valor. Ojo: `.boda-boton` con `display: block` pisa el
+  atributo `hidden` → hace falta `.boda-regalo__mostrar[hidden] { display: none }`.
+- Ajustes generales (hechos y verificados en la web): IBAN puesto por el usuario; beneficiario
+  "Joaquín Machuca Baena o Belén Aparicio Castellano"; paradas "Jardines de Murillo" y "Villarrasa"
+  **sin hora** (pendiente de que el usuario las dé; formato `Parada;Hora`); vestimenta dice "La
+  celebración es en el campo". Las respuestas antiguas conservan "Nervión Plaza"/"Torneo".
+- **Alojamiento recomendado** (2026-11-08, ajuste `alojamiento_html` cambiado en wp-admin y verificado):
+  8 sitios sacados de Booking para la noche del 13 al 14-02-2027 (había disponibilidad), agrupados en
+  "Al lado de la celebración" / "Cerca de Villarrasa" / "Moguer y Trigueros", con enlace a su ficha
+  de Booking (URL limpia, sin parámetros de afiliado) y la nota de Booking de ese día. Sin precios
+  (cambian). main.css: `.boda-contenido-libre h3` con estilo de etiqueta y enlaces granate con
+  subrayado dorado.
+- **Lugares reales** (2026-11-08, ajustes cambiados y verificados): ceremonia "Iglesia de San Vicente
+  Mártir" (Villarrasa, Huelva), celebración "Convento de la Luz" (Lucena del Puerto, Huelva). Sin
+  calle (no se encontró dirección exacta); los mapas embebidos buscan por nombre y marcan bien
+  "Parroquia San Vicente Mártir" y "Convento De La Luz". Ojo: al lado está la "Hacienda de la Luz",
+  otro sitio distinto.
+- **"Joaquín" ⇄ "Nai" en la portada (PRUEBA, 2026-11-08, subida y verificada en Chrome; el usuario decide
+  si se queda)**: en `section-portada.php` el `nombre_2` va dentro de un `<button data-cambio-nombre>`
+  con los dos nombres apilados (apodo fijo `$apodo_2 = 'Nai'`). Al pulsar (JS en `nav-anchors.js`):
+  el que sale se desvanece con desenfoque, destello dorado radial (`::after`, `boda-destello`), el que
+  entra se "escribe" con `clip-path` de izquierda a derecha y el ancho del botón transiciona para
+  recentrar el título. Pulsar otra vez vuelve. Pista: a los 3,5 s sin pulsar, brillo dorado una vez
+  (`boda-pista`). Respeta `prefers-reduced-motion`. Para quitarlo: revertir el bloque del h1 en
+  `section-portada.php` (el CSS/JS sobrantes no hacen nada sin el botón).
+
+### Imagen de vista previa (Open Graph) — 2026-11-08
+- `assets/images/og-invitacion.jpg` (1200×630) sustituye a `og-default.jpg` como reserva en `boda_theme_og_imagen_url()`: fondo de clavelinas + tarjeta crema con "Nos casamos", "Belén & Joaquín" en Altesse, fecha y "Villarrasa · Huelva".
+- Se generó con Playwright sobre la web real (para usar las fuentes de Adobe) inyectando una capa y haciendo captura. Si se cambia, usar un nombre de archivo nuevo: WhatsApp cachea la imagen por URL.
+
+### Página Boda → Menú — 2026-11-08
+- `includes/class-rsvp-boda-menu.php` (carta fija en `catalogo()`, sacada de `menu convento de la luz vip 27 alquiler incluido .doc`; los ids de plato no se cambian nunca), `admin/view-menu.php`, `assets/js/rsvp-boda-menu.js`, CSS en `rsvp-boda-admin.css` (bloque "Menú").
+- Estado en la opción `rsvp_boda_menu` (autoload no): por plato `b`/`n` (♥ Belén / ♥ Nai) y `e` (elegido; en secciones "uno" solo uno), `base` (menú 1–4: marca sus platos y pone su precio 98/103/108/113 €), `invitados`, `horas` extra de barra, `montaditos`, `notas`. Mismo control de versión 409 que Mesas.
+- Precio orientativo: base + estaciones no incluidas en la base + barra libre 14 € + horas × 3,5 € (por persona) × invitados + montaditos por unidad, todo + IVA.
+- Probado en producción (elegir base, votar, guardar, recargar) y dejado vacío.
+- Cata (mismo día): marca `c` por plato, solo en primeros y segundos y como mucho 5 (`MAX_CATA`, `SECCIONES_CATA`, saneado también en servidor). Recuadro "Para la cata" arriba del resumen, filtro "Para la cata" y botón "Imprimir cata" (hoja numerada con hueco para apuntar). "Imprimir menú" saca solo lo elegido, sin precios.
+
+### Historia y contacto — 2026-11-08
+- Historia: en escritorio, si la última foto queda sola en su fila (o solo hay una), va centrada (`:last-child:nth-child(odd)`).
+- Contacto: dos teléfonos, `telefono_contacto` (Nai) y `telefono_contacto_2` (Belén; el número está guardado en los ajustes, no en el código). Se muestran como "600 11 22 33" con `boda_theme_telefono_legible()` (functions.php). Los mensajes de error del formulario siguen usando solo el de Nai.
+- (Más tarde) OG v2: `og-invitacion-v2.jpg`, tarjeta con nombres en vertical dentro del cuadrado central (WhatsApp recorta la miniatura en cuadrado). `boda_theme_og_imagen()` devuelve [url, ancho, alto] y header.php añade og:image:width/height/secure_url/alt, og:locale y og:site_name. og-default.jpg y og-invitacion.jpg se sobrescribieron con la misma imagen. theme-color ahora es granate.

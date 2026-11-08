@@ -16,6 +16,6 @@ $contenido = rsvp_boda_get_option( 'alojamiento_html' );
 <section id="alojamiento" class="boda-seccion boda-seccion--alojamiento">
 	<div class="boda-seccion__contenido">
 		<h2 class="boda-seccion__titulo">Alojamiento recomendado</h2>
-		<div class="boda-contenido-libre"><?php echo wp_kses_post( $contenido ); ?></div>
+		<div class="boda-contenido-libre"><?php echo wp_kses_post( wpautop( $contenido ) ); ?></div>
 	</div>
 </section>
